@@ -1,0 +1,26 @@
+model User {
+  id                 String       @id @default(uuid())
+  name               String
+  email              String
+  password           String?
+  googleId           String?      @unique
+  authProvider       AuthProvider @default(CREDENTIAL)
+  emailVerified      Boolean      @default(false)
+  role               Role         @default(STUDENT)
+  status             UserStatus   @default(ACTIVE)
+  needPasswordChange Boolean      @default(false)
+  isDeleted          Boolean      @default(false)
+
+  imageUrl      String?
+  imagePublicId String?
+
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  student Student?
+  teacher Teacher?
+
+  @@unique([email])
+  @@map("users")
+}
