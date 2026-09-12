@@ -1,4 +1,4 @@
-model Student {
+model Client {
   id String @id @default(uuid(7))
 
   name          String
@@ -14,7 +14,7 @@ model Student {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  @@index([email], name: "idx_student_email")
-  @@index([isDeleted], name: "idx_student_isDeleted")
-  @@map("students")
+  @@index([email], name: "idx_client_email")
+  @@index([isDeleted], name: "idx_client_isDeleted")
+  @@map("clients")
 }

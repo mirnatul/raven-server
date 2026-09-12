@@ -1,12 +1,12 @@
 import { z } from "zod";
 
-export const ApplyAsTeacherValidationZodSchema = z.object({
+export const ApplyAsDeveloperValidationZodSchema = z.object({
 	user: z.object({
 		name: z.string().min(2, "Name must be at least 2 characters").max(100),
 		email: z.email("Please provide a valid email address"),
 	}),
 
-	teacher: z.object({
+	developer: z.object({
 		address: z.string().max(255).optional(),
 		specialization: z.string().min(2, "Specialization is required").max(100),
 		licenseNumber: z.string().min(2, "License number is required").max(100),

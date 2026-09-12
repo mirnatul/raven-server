@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import config from "../../config";
 import {
 	Role,
-	TeacherVerificationStatus,
+	DeveloperVerificationStatus,
 } from "../../../generated/prisma/enums";
 import crypto from "crypto";
 import { redisClient } from "../../lib/redis";
@@ -13,18 +13,18 @@ import path from "path";
 import ejs from "ejs";
 import { transporter } from "../../lib/nodemailer";
 import {
-	IApplyAsTeacherPayload,
-	IApproveTeacherPayload,
-	IVerifyTeacherEmailPayload,
-} from "./teacher.interface";
+	IApplyAsDeveloperPayload,
+	IApproveDeveloperPayload,
+	IVerifyDeveloperEmailPayload,
+} from "./developer.interface";
 import { RequestUser } from "../../middleware/checkAuth";
 import { IQuery } from "../../interfaces";
-import { TeacherWhereInput } from "../../../generated/prisma/models";
+import { DeveloperWhereInput } from "../../../generated/prisma/models";
 import { AppError } from "../../utils/AppError";
 import httpStatus from "http-status";
 
-const applyAsTeacher = async (
-	payload: IApplyAsTeacherPayload,
+const applyAsDeveloper = async (
+	payload: IApplyAsDeveloperPayload,
 	resume: Express.Multer.File | null,
 	additionalFiles: Express.Multer.File[],
 ) => {
@@ -84,23 +84,23 @@ const applyAsTeacher = async (
 		}),
 	);
 
-	const randomTeacherPassword = Math.random().toString(36).slice(-8);
+	const randomDeveloperPassword = Math.random().toString(36).slice(-8);
 	const hashedPassword = await bcrypt.hash(
-		randomTeacherPassword,
+		randomDeveloperPassword,
 		Number(config.bcrypt_salt_rounds),
 	);
-	// create teacher application
-	const teacherApplication = await prisma.user.create({
+	// create developer application
+	const developerApplication = await prisma.user.create({
 		data: {
 			...payload.user,
 			password: hashedPassword,
-			role: Role.TEACHER,
+			role: Role.DEVELOPER,
 			needPasswordChange: true,
-			teacher: {
+			developer: {
 				create: {
 					name: payload.user.name,
 					email: payload.user.email,
-					...payload.teacher,
+					...payload.developer,
 					resume: resumeUploadResult.secure_url,
 					resumePublicId: resumeUploadResult.public_id,
 					additionalFiles: additionalFilesUploadResults.map((file) => ({
@@ -111,13 +111,13 @@ const applyAsTeacher = async (
 			},
 		},
 		include: {
-			teacher: true,
+			developer: true,
 		},
 	});
 
-	// email validation for teacher
+	// email validation for developer
 	const expirationSeconds = 60 * 60;
-	const otpKey = `teacher-application-otp:${payload.user.email}`;
+	const otpKey = `developer-application-otp:${payload.user.email}`;
 	const otpValue = crypto.randomInt(100000, 1000000).toString();
 
 	await redisClient.set(otpKey, otpValue, {
@@ -144,21 +144,21 @@ const applyAsTeacher = async (
 		html,
 	});
 
-	return teacherApplication;
+	return developerApplication;
 };
 
-const verifyTeacherEmail = async (payload: IVerifyTeacherEmailPayload) => {
+const verifyDeveloperEmail = async (payload: IVerifyDeveloperEmailPayload) => {
 	const otp = payload.otp;
 	const email = payload.email.trim().toLowerCase();
 
 	const existingUser = await prisma.user.findUnique({
-		where: { email, role: Role.TEACHER },
+		where: { email, role: Role.DEVELOPER },
 	});
 
 	if (!existingUser) {
 		throw new AppError(
 			httpStatus.NOT_FOUND,
-			"Teacher application not found",
+			"Developer application not found",
 		);
 	}
 
@@ -166,7 +166,7 @@ const verifyTeacherEmail = async (payload: IVerifyTeacherEmailPayload) => {
 		throw new AppError(httpStatus.CONFLICT, "Email Already Verified");
 	}
 
-	const otpKey = `teacher-application-otp:${email}`;
+	const otpKey = `developer-application-otp:${email}`;
 
 	const redisOtp = await redisClient.get(otpKey);
 
@@ -187,32 +187,32 @@ const verifyTeacherEmail = async (payload: IVerifyTeacherEmailPayload) => {
 		where: { id: existingUser.id },
 		data: { emailVerified: true },
 		omit: { password: true },
-		include: { teacher: true },
+		include: { developer: true },
 	});
 
 	return verifiedUser;
 };
 
-const approveTeacher = async (
-	payload: IApproveTeacherPayload,
+const approveDeveloper = async (
+	payload: IApproveDeveloperPayload,
 	reviewer: RequestUser,
 ) => {
-	const { teacherId, verificationStatus, rejectionReason } = payload;
+	const { developerId, verificationStatus, rejectionReason } = payload;
 
-	const existingTeacher = await prisma.teacher.findUnique({
-		where: { id: teacherId },
+	const existingDeveloper = await prisma.developer.findUnique({
+		where: { id: developerId },
 		include: { user: true },
 	});
 
-	if (!existingTeacher) {
+	if (!existingDeveloper) {
 		throw new AppError(httpStatus.NOT_FOUND, "Doctor Application Not Found");
 	}
 
-	if (existingTeacher.isDeleted) {
+	if (existingDeveloper.isDeleted) {
 		throw new AppError(httpStatus.GONE, "Doctor Application Has Been Deleted");
 	}
 
-	if (!existingTeacher.user.emailVerified) {
+	if (!existingDeveloper.user.emailVerified) {
 		throw new AppError(
 			httpStatus.BAD_REQUEST,
 			"Doctor Has Not Verified Their Email Yet. Application Cannot Be Reviewed.",
@@ -220,16 +220,16 @@ const approveTeacher = async (
 	}
 
 	if (
-		existingTeacher.verificationStatus !== TeacherVerificationStatus.PENDING
+		existingDeveloper.verificationStatus !== DeveloperVerificationStatus.PENDING
 	) {
 		throw new AppError(
 			httpStatus.CONFLICT,
-			`Doctor Application Has Already Been ${existingTeacher.verificationStatus.toLowerCase()}`,
+			`Doctor Application Has Already Been ${existingDeveloper.verificationStatus.toLowerCase()}`,
 		);
 	}
 
 	if (
-		verificationStatus === TeacherVerificationStatus.REJECTED &&
+		verificationStatus === DeveloperVerificationStatus.REJECTED &&
 		!rejectionReason
 	) {
 		throw new AppError(
@@ -238,12 +238,12 @@ const approveTeacher = async (
 		);
 	}
 
-	const updatedTeacher = await prisma.teacher.update({
-		where: { id: teacherId },
+	const updatedDeveloper = await prisma.developer.update({
+		where: { id: developerId },
 		data: {
 			verificationStatus,
 			rejectionReason:
-				verificationStatus === TeacherVerificationStatus.REJECTED
+				verificationStatus === DeveloperVerificationStatus.REJECTED
 					? rejectionReason
 					: null,
 			reviewedBy: reviewer.userId,
@@ -251,44 +251,44 @@ const approveTeacher = async (
 		},
 	});
 
-	const isApproved = verificationStatus === TeacherVerificationStatus.APPROVED;
+	const isApproved = verificationStatus === DeveloperVerificationStatus.APPROVED;
 
 	const tempatePath = path.join(
 		process.cwd(),
 		`src/app/templates/${
 			isApproved
-				? "teacher-application-approved.ejs"
-				: "teacher-application-rejected.ejs"
+				? "developer-application-approved.ejs"
+				: "developer-application-rejected.ejs"
 		}`,
 	);
 
 	const templateData = {
-		name: updatedTeacher.name,
-		reason: updatedTeacher.rejectionReason,
+		name: updatedDeveloper.name,
+		reason: updatedDeveloper.rejectionReason,
 	};
 
 	const html = await ejs.renderFile(tempatePath, templateData);
 
 	await transporter.sendMail({
 		from: config.email_sender,
-		to: updatedTeacher.email,
+		to: updatedDeveloper.email,
 		subject: isApproved
-			? "Your Teacher Application Has Been Approved"
-			: "Your Teacher Application Has Been Rejected",
+			? "Your Developer Application Has Been Approved"
+			: "Your Developer Application Has Been Rejected",
 		html,
 	});
 
-	return updatedTeacher;
+	return updatedDeveloper;
 };
 
-const getAllTeachers = async (query: IQuery) => {
+const getAllDevelopers = async (query: IQuery) => {
 	const limit = query.limit ? Number(query.limit) : 10;
 	const page = query.page ? Number(query.page) : 1;
 	const skip = (page - 1) * limit;
 	const sortBy = query.sortBy ? query.sortBy : "createdAt";
 	const sortOrder = query.sortOrder ? query.sortOrder : "desc";
 
-	const andConditions: TeacherWhereInput[] = [];
+	const andConditions: DeveloperWhereInput[] = [];
 
 	//Searching
 	if (query.searchTerm) {
@@ -333,14 +333,14 @@ const getAllTeachers = async (query: IQuery) => {
 
 	if (query.verificationStatus) {
 		andConditions.push({
-			verificationStatus: query.verificationStatus as TeacherVerificationStatus,
+			verificationStatus: query.verificationStatus as DeveloperVerificationStatus,
 		});
 	}
 
 	// default condition
 	andConditions.push({ isDeleted: false });
 
-	const allTeachers = await prisma.teacher.findMany({
+	const allDevelopers = await prisma.developer.findMany({
 		where: {
 			AND: andConditions.length > 0 ? andConditions : undefined,
 		},
@@ -366,26 +366,26 @@ const getAllTeachers = async (query: IQuery) => {
 		},
 	});
 
-	const totalTeacherCount = await prisma.teacher.count({
+	const totalDeveloperCount = await prisma.developer.count({
 		where: {
 			AND: andConditions,
 		},
 	});
 
 	return {
-		data: allTeachers,
+		data: allDevelopers,
 		meta: {
 			page: page,
 			limit: limit,
-			total: totalTeacherCount,
-			totalPages: Math.ceil(totalTeacherCount / limit),
+			total: totalDeveloperCount,
+			totalPages: Math.ceil(totalDeveloperCount / limit),
 		},
 	};
 };
 
-export const TeacherServices = {
-	applyAsTeacher,
-	verifyTeacherEmail,
-	approveTeacher,
-	getAllTeachers,
+export const DeveloperServices = {
+	applyAsDeveloper,
+	verifyDeveloperEmail,
+	approveDeveloper,
+	getAllDevelopers,
 };

@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('SUPER_ADMIN', 'ADMIN', 'TEACHER', 'STUDENT');
+CREATE TYPE "Role" AS ENUM ('SUPER_ADMIN', 'ADMIN', 'DEVELOPER', 'CLIENT');
 
 -- CreateEnum
 CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'BLOCKED', 'DELETED');
@@ -8,7 +8,7 @@ CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'BLOCKED', 'DELETED');
 CREATE TYPE "Gender" AS ENUM ('MALE', 'FEMALE', 'OTHER');
 
 -- CreateTable
-CREATE TABLE "students" (
+CREATE TABLE "clients" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE "students" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "userId" TEXT NOT NULL,
 
-    CONSTRAINT "students_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "clients_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -30,7 +30,7 @@ CREATE TABLE "users" (
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "emailVerified" BOOLEAN NOT NULL DEFAULT false,
-    "role" "Role" NOT NULL DEFAULT 'STUDENT',
+    "role" "Role" NOT NULL DEFAULT 'CLIENT',
     "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
     "needPasswordChange" BOOLEAN NOT NULL DEFAULT false,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
@@ -42,19 +42,19 @@ CREATE TABLE "users" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "students_email_key" ON "students"("email");
+CREATE UNIQUE INDEX "clients_email_key" ON "clients"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "students_userId_key" ON "students"("userId");
+CREATE UNIQUE INDEX "clients_userId_key" ON "clients"("userId");
 
 -- CreateIndex
-CREATE INDEX "idx_student_email" ON "students"("email");
+CREATE INDEX "idx_client_email" ON "clients"("email");
 
 -- CreateIndex
-CREATE INDEX "idx_student_isDeleted" ON "students"("isDeleted");
+CREATE INDEX "idx_client_isDeleted" ON "clients"("isDeleted");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- AddForeignKey
-ALTER TABLE "students" ADD CONSTRAINT "students_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "clients" ADD CONSTRAINT "clients_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

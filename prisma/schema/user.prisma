@@ -6,7 +6,7 @@ model User {
   googleId           String?      @unique
   authProvider       AuthProvider @default(CREDENTIAL)
   emailVerified      Boolean      @default(false)
-  role               Role         @default(STUDENT)
+  role               Role         @default(CLIENT)
   status             UserStatus   @default(ACTIVE)
   needPasswordChange Boolean      @default(false)
   isDeleted          Boolean      @default(false)
@@ -18,8 +18,8 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  student Student?
-  teacher Teacher?
+  client Client?
+  developer Developer?
 
   @@unique([email])
   @@map("users")

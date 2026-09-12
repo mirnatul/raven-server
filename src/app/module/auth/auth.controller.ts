@@ -6,7 +6,7 @@ import type { IRequestUser } from "./auth.interface";
 import { AuthService } from "./auth.service";
 import { AppError } from "../../utils/AppError";
 
-const registerStudent = catchAsync(async (req: Request, res: Response) => {
+const registerClient = catchAsync(async (req: Request, res: Response) => {
 	const payload = req.body;
 	await AuthService.registerPatient(payload);
 
@@ -18,11 +18,11 @@ const registerStudent = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
-const verifyStudentEmail = catchAsync(async (req: Request, res: Response) => {
+const verifyClientEmail = catchAsync(async (req: Request, res: Response) => {
 	const payload = req.body;
-	const result = await AuthService.verifyStudentEmail(payload);
+	const result = await AuthService.verifyClientEmail(payload);
 
-	const { accessToken, refreshToken, user, student } = result;
+	const { accessToken, refreshToken, user, client } = result;
 
 	res.cookie("accessToken", accessToken, {
 		httpOnly: true,
@@ -40,12 +40,12 @@ const verifyStudentEmail = catchAsync(async (req: Request, res: Response) => {
 	sendResponse(res, {
 		statusCode: httpStatus.CREATED,
 		success: true,
-		message: "Student registered successfully",
+		message: "Client registered successfully",
 		data: {
 			accessToken,
 			refreshToken,
 			user,
-			student,
+			client,
 		},
 	});
 });
@@ -183,8 +183,8 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const AuthController = {
-	registerStudent,
-	verifyStudentEmail,
+	registerClient,
+	verifyClientEmail,
 	loginUser,
 	getMe,
 	refreshToken,

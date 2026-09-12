@@ -17,7 +17,7 @@ import crypto from "crypto";
 import { UserRoutes } from "./app/module/user/user.route";
 import { getBkashIdToken } from "./app/lib/bkash";
 import { AppointmentRoutes } from "./app/module/appointment/appointment.route";
-import { TeacherRoutes } from "./app/module/teacher/teacher.route";
+import { DeveloperRoutes } from "./app/module/developer/developer.route";
 
 const app: Application = express();
 
@@ -38,7 +38,7 @@ app.use(cookieParser());
 app.use("/api/auth", AuthRoutes);
 app.use("/api/user", UserRoutes);
 app.use("/api/appointment", AppointmentRoutes);
-app.use("/api/teacher", TeacherRoutes);
+app.use("/api/developer", DeveloperRoutes);
 
 app.get("/test", async (req: Request, res: Response, next: NextFunction) => {
 	try {

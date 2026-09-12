@@ -103,13 +103,13 @@ export const seedTesterAdmin = async () => {
 	}
 };
 
-// create tester teacher
+// create tester developer
 
-export const seedTesterTeacher = async () => {
+export const seedTesterDeveloper = async () => {
 	try {
 		const isTesterDoctorExist = await prisma.user.findUnique({
 			where: {
-				email: config.tester_teacher_email,
+				email: config.tester_developer_email,
 			},
 		});
 
@@ -118,8 +118,8 @@ export const seedTesterTeacher = async () => {
 			return;
 		}
 
-		const name = config.tester_teacher_name;
-		const email = config.tester_teacher_email;
+		const name = config.tester_developer_name;
+		const email = config.tester_developer_email;
 		const password = config.tester_admin_password;
 
 		if (!name || !email || !password) {
@@ -139,17 +139,17 @@ export const seedTesterTeacher = async () => {
 				name,
 				email,
 				password: hashedPassword,
-				role: Role.TEACHER,
+				role: Role.DEVELOPER,
 				needPasswordChange: false,
 				emailVerified: true,
-				teacher: {
+				developer: {
 					create: {
 						email,
 						name,
 						experienceYears: 2,
-						licenseNumber: "TEC123",
+						licenseNumber: "DEV123",
 						qualifications: "BSc",
-						specialization: "Mathematics",
+						specialization: "Software Engineering",
 					},
 				},
 			},
@@ -161,7 +161,7 @@ export const seedTesterTeacher = async () => {
 
 		await prisma.user.delete({
 			where: {
-				email: config.tester_teacher_email,
+				email: config.tester_developer_email,
 			},
 		});
 	}

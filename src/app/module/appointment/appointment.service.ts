@@ -290,7 +290,7 @@ const cancelAppointment = async (payload: any) => {
 					trxID: existingAppointment.payment?.bkashTrxId,
 					amount: existingAppointment.payment?.amount.toString(),
 					sku: "Appointment Cacellation",
-					reason: "Student cancelled the appointment",
+					reason: "Client cancelled the appointment",
 				}),
 			},
 		);

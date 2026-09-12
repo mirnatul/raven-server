@@ -29,7 +29,7 @@ import { AppError } from "../../utils/AppError";
 import httpStatus from "http-status";
 
 const registerPatient = async (payload: IRegisterPatientPayload) => {
-	const { name, password, student: studentData } = payload;
+	const { name, password, client: clientData } = payload;
 
 	const email = payload.email.trim().toLowerCase();
 
@@ -47,7 +47,7 @@ const registerPatient = async (payload: IRegisterPatientPayload) => {
 	const hashedPassword = await bcrypt.hash(password, 8);
 
 	// redis
-	const otpKey = `studentRegistration-otp:${payload.email}`;
+	const otpKey = `clientRegistration-otp:${payload.email}`;
 	const otpValue = crypto.randomInt(100000, 1000000).toString();
 	// console.log(otp);
 
@@ -63,14 +63,14 @@ const registerPatient = async (payload: IRegisterPatientPayload) => {
 		name,
 		email,
 		password: hashedPassword,
-		role: Role.STUDENT,
+		role: Role.CLIENT,
 		status: UserStatus.ACTIVE,
-		student: studentData,
+		client: clientData,
 	};
-	const studentRegistrationKey = `studentRegistration-data:${payload.email}`;
+	const clientRegistrationKey = `clientRegistration-data:${payload.email}`;
 
 	await redisClient.set(
-		studentRegistrationKey,
+		clientRegistrationKey,
 		JSON.stringify(redisUserDataPayload),
 		{
 			expiration: {
@@ -98,7 +98,7 @@ const registerPatient = async (payload: IRegisterPatientPayload) => {
 	});
 };
 
-const verifyStudentEmail = async (payload: IVerifyEmailPayload) => {
+const verifyClientEmail = async (payload: IVerifyEmailPayload) => {
 	const otp = payload.otp;
 	const email = payload.email.trim().toLowerCase();
 
@@ -117,7 +117,7 @@ const verifyStudentEmail = async (payload: IVerifyEmailPayload) => {
 		throw new AppError(httpStatus.GONE, "User is deleted");
 	}
 
-	const otpKey = `studentRegistration-otp:${payload.email}`;
+	const otpKey = `clientRegistration-otp:${payload.email}`;
 	const redisOtp = await redisClient.get(otpKey);
 	if (!redisOtp) {
 		throw new AppError(httpStatus.BAD_REQUEST, "Invalid OTP");
@@ -130,43 +130,43 @@ const verifyStudentEmail = async (payload: IVerifyEmailPayload) => {
 	await redisClient.del(otpKey);
 
 	// if match
-	const studentRegistrationKey = `studentRegistration-data:${email}`;
-	const redisStudentData = await redisClient.get(studentRegistrationKey);
+	const clientRegistrationKey = `clientRegistration-data:${email}`;
+	const redisClientData = await redisClient.get(clientRegistrationKey);
 
-	if (!redisStudentData) {
+	if (!redisClientData) {
 		throw new AppError(
 			httpStatus.NOT_FOUND,
-			"Student registration data not found in Redis",
+			"Client registration data not found in Redis",
 		);
 	}
 
-	const studentPayload: IRegisterPatientPayload = JSON.parse(redisStudentData);
+	const clientPayload: IRegisterPatientPayload = JSON.parse(redisClientData);
 
 	const createdUser = await prisma.user.create({
 		data: {
-			name: studentPayload.name,
-			email: studentPayload.email,
-			password: studentPayload.password,
-			role: Role.STUDENT,
+			name: clientPayload.name,
+			email: clientPayload.email,
+			password: clientPayload.password,
+			role: Role.CLIENT,
 			status: UserStatus.ACTIVE,
 			emailVerified: true,
-			student: {
+			client: {
 				create: {
-					name: studentPayload.name,
-					email: studentPayload.email,
-					contactNumber: studentPayload?.student?.contactNumber || null,
+					name: clientPayload.name,
+					email: clientPayload.email,
+					contactNumber: clientPayload?.client?.contactNumber || null,
 				},
 			},
 		},
 		omit: { password: true },
-		include: { student: true },
+		include: { client: true },
 	});
 
-	await redisClient.del(studentRegistrationKey);
+	await redisClient.del(clientRegistrationKey);
 
 	const templatePath = path.join(
 		process.cwd(),
-		"src/app/templates/student-welcome-email.ejs",
+		"src/app/templates/client-welcome-email.ejs",
 	);
 
 	const html = await ejs.renderFile(templatePath, {
@@ -180,13 +180,13 @@ const verifyStudentEmail = async (payload: IVerifyEmailPayload) => {
 		html,
 	});
 
-	const { student, ...user } = createdUser;
+	const { client, ...user } = createdUser;
 
 	const { accessToken, refreshToken } = createUserTokens(user);
 
 	return {
 		user,
-		student,
+		client,
 		accessToken,
 		refreshToken,
 	};
@@ -242,7 +242,7 @@ const getMe = async (user: IRequestUser) => {
 			id: user.id,
 		},
 		include: {
-			student: true,
+			client: true,
 		},
 		omit: {
 			password: true,
@@ -317,10 +317,10 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 		);
 	}
 
-	const ifStudentExistWithGoogleAuth = await prisma.user.findUnique({
+	const ifClientExistWithGoogleAuth = await prisma.user.findUnique({
 		where: {
 			email: googleIdTokenPayload.email,
-			role: Role.STUDENT,
+			role: Role.CLIENT,
 			googleId: googleIdTokenPayload.sub,
 		},
 	});
@@ -335,33 +335,33 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 		);
 	}
 
-	let user = ifStudentExistWithGoogleAuth;
+	let user = ifClientExistWithGoogleAuth;
 
-	if (!ifStudentExistWithGoogleAuth) {
-		const ifStudentExistWithCredential = await prisma.user.findUnique({
+	if (!ifClientExistWithGoogleAuth) {
+		const ifClientExistWithCredential = await prisma.user.findUnique({
 			where: {
 				email: googleIdTokenPayload.email,
-				role: Role.STUDENT,
+				role: Role.CLIENT,
 				authProvider: AuthProvider.CREDENTIAL,
 			},
 		});
-		if (ifStudentExistWithCredential) {
-			if (!ifStudentExistWithCredential.emailVerified) {
+		if (ifClientExistWithCredential) {
+			if (!ifClientExistWithCredential.emailVerified) {
 				throw new AppError(httpStatus.FORBIDDEN, "Email not verified");
 			}
-			if (ifStudentExistWithCredential.status === UserStatus.BLOCKED) {
+			if (ifClientExistWithCredential.status === UserStatus.BLOCKED) {
 				throw new AppError(httpStatus.FORBIDDEN, "User is blocked");
 			}
 			if (
-				ifStudentExistWithCredential.isDeleted ||
-				ifStudentExistWithCredential.status === UserStatus.DELETED
+				ifClientExistWithCredential.isDeleted ||
+				ifClientExistWithCredential.status === UserStatus.DELETED
 			) {
 				throw new AppError(httpStatus.GONE, "User is deleted");
 			}
 
 			user = await prisma.user.update({
 				where: {
-					id: ifStudentExistWithCredential.id,
+					id: ifClientExistWithCredential.id,
 				},
 				data: {
 					googleId: googleIdTokenPayload.sub,
@@ -373,11 +373,11 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 				data: {
 					name: googleIdTokenPayload.name,
 					email: googleIdTokenPayload.email,
-					role: Role.STUDENT,
+					role: Role.CLIENT,
 					googleId: googleIdTokenPayload.sub,
 					authProvider: AuthProvider.GOOGLE,
 					emailVerified: true,
-					student: {
+					client: {
 						create: {
 							name: googleIdTokenPayload.name,
 							email: googleIdTokenPayload.email,
@@ -388,7 +388,7 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 
 			const templatePath = path.join(
 				process.cwd(),
-				"src/app/templates/student-welcome-email.ejs",
+				"src/app/templates/client-welcome-email.ejs",
 			);
 
 			const html = await ejs.renderFile(templatePath, {
@@ -544,7 +544,7 @@ const resetPassword = async (payload: IResetPasswordPayload) => {
 
 export const AuthService = {
 	registerPatient,
-	verifyStudentEmail,
+	verifyClientEmail,
 	loginUser,
 	getMe,
 	refreshToken,

@@ -9,7 +9,7 @@ const router = Router();
 // Tips: first auth then zob
 router.patch(
 	"/profile-image",
-	auth(Role.ADMIN, Role.STUDENT, Role.SUPER_ADMIN, Role.TEACHER),
+	auth(Role.ADMIN, Role.CLIENT, Role.SUPER_ADMIN, Role.DEVELOPER),
 	upload.single("profileImage"),
 	UserController.uploadProfileImage,
 );

@@ -10,14 +10,14 @@ const router = Router();
 // Tips: first auth then zob
 router.post(
 	"/register",
-	validateRequest(UserValidation.StudentRegistrationZodSchema),
-	AuthController.registerStudent,
+	validateRequest(UserValidation.ClientRegistrationZodSchema),
+	AuthController.registerClient,
 );
 
 router.post(
 	"/verify-email",
-	validateRequest(UserValidation.StudentEmailVerifyZodSchema),
-	AuthController.verifyStudentEmail,
+	validateRequest(UserValidation.ClientEmailVerifyZodSchema),
+	AuthController.verifyClientEmail,
 );
 
 router.post(
@@ -27,7 +27,7 @@ router.post(
 );
 router.get(
 	"/me",
-	auth(Role.ADMIN, Role.TEACHER, Role.STUDENT, Role.SUPER_ADMIN),
+	auth(Role.ADMIN, Role.DEVELOPER, Role.CLIENT, Role.SUPER_ADMIN),
 	AuthController.getMe,
 );
 router.post("/refresh-token", AuthController.refreshToken);

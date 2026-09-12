@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { TeacherController } from "./teacher.controller";
+import { DeveloperController } from "./developer.controller";
 import { upload } from "../../lib/multer";
 import { validateRequest } from "../../middleware/validateRequest";
 import { auth } from "../../middleware/checkAuth";
@@ -8,29 +8,29 @@ import { Role } from "../../../generated/prisma/enums";
 const router = Router();
 
 router.post(
-	"/apply-as-teacher",
+	"/apply-as-developer",
 	upload.fields([
 		{ name: "resume", maxCount: 1 },
 		{ name: "additionalFiles", maxCount: 10 },
 	]),
-	TeacherController.applyAsTeacher,
+	DeveloperController.applyAsDeveloper,
 );
 
 router.post(
-	"/apply-as-teacher/verify-email",
-	TeacherController.verifyTeacherEmail,
+	"/apply-as-developer/verify-email",
+	DeveloperController.verifyDeveloperEmail,
 );
 
 router.post(
 	"/approve-doctor",
 	auth(Role.ADMIN, Role.SUPER_ADMIN),
-	TeacherController.verifyTeacherEmail,
+	DeveloperController.verifyDeveloperEmail,
 );
 
 router.get(
-	"/all-teachers",
+	"/all-developers",
 	auth(Role.ADMIN, Role.SUPER_ADMIN),
-	TeacherController.getAllTeachers,
+	DeveloperController.getAllDevelopers,
 );
 
-export const TeacherRoutes = router;
+export const DeveloperRoutes = router;

@@ -1,27 +1,27 @@
 import cron from "node-cron";
 import { prisma } from "./prisma";
-import { Role, TeacherVerificationStatus } from "../../generated/prisma/enums";
+import { Role, DeveloperVerificationStatus } from "../../generated/prisma/enums";
 
-export const deleteUnverifiedTeachers = async () => {
+export const deleteUnverifiedDevelopers = async () => {
 	cron.schedule("*/10 * * * *", async () => {
 		try {
 			// prisma business logic
-			// delete teacher that are not verified within 1 hour
+			// delete developer that are not verified within 1 hour
 			const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-			const deletedTeachers = await prisma.user.deleteMany({
+			const deletedDevelopers = await prisma.user.deleteMany({
 				where: {
-					role: Role.TEACHER,
+					role: Role.DEVELOPER,
 					emailVerified: false,
 					createdAt: { lt: oneHourAgo },
-					teacher: {
-						verificationStatus: TeacherVerificationStatus.PENDING,
+					developer: {
+						verificationStatus: DeveloperVerificationStatus.PENDING,
 					},
 				},
 			});
 
-			if (deletedTeachers.count > 0) {
+			if (deletedDevelopers.count > 0) {
 				console.log(
-					`Cron: Deleted ${deletedTeachers.count} unverified email teacher applications older than 1 hour ago`,
+					`Cron: Deleted ${deletedDevelopers.count} unverified email developer applications older than 1 hour ago`,
 				);
 			}
 		} catch (error) {
@@ -29,7 +29,7 @@ export const deleteUnverifiedTeachers = async () => {
 		}
 
 		console.log(
-			"Cron: Unverified teacher delete cron schedule (every 10 minute)",
+			"Cron: Unverified developer delete cron schedule (every 10 minute)",
 		);
 	});
 };

@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
-import { TeacherServices } from "./teacher.service";
+import { DeveloperServices } from "./developer.service";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from "http-status";
-import { ApplyAsTeacherValidationZodSchema } from "./teacher.validation";
+import { ApplyAsDeveloperValidationZodSchema } from "./developer.validation";
 import { AppError } from "../../utils/AppError";
 
-const applyAsTeacher = catchAsync(async (req: Request, res: Response) => {
+const applyAsDeveloper = catchAsync(async (req: Request, res: Response) => {
 	const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 	const resume = files?.["resume"] ? files["resume"][0] : null;
 	const additionalFiles = files?.["additionalFiles"] || [];
@@ -14,7 +14,7 @@ const applyAsTeacher = catchAsync(async (req: Request, res: Response) => {
 	console.log(req.body.data);
 
 	// zod validation
-	const zodValidationResult = ApplyAsTeacherValidationZodSchema.safeParse(
+	const zodValidationResult = ApplyAsDeveloperValidationZodSchema.safeParse(
 		JSON.parse(req.body.data),
 	);
 
@@ -24,7 +24,7 @@ const applyAsTeacher = catchAsync(async (req: Request, res: Response) => {
 
 	const payload = zodValidationResult.data;
 
-	const result = await TeacherServices.applyAsTeacher(
+	const result = await DeveloperServices.applyAsDeveloper(
 		payload,
 		resume,
 		additionalFiles,
@@ -33,53 +33,53 @@ const applyAsTeacher = catchAsync(async (req: Request, res: Response) => {
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,
-		message: "Applied as teacher successfully",
+		message: "Applied as developer successfully",
 		data: result,
 	});
 });
 
-const verifyTeacherEmail = catchAsync(async (req: Request, res: Response) => {
+const verifyDeveloperEmail = catchAsync(async (req: Request, res: Response) => {
 	const payload = req.body;
 
-	const result = await TeacherServices.verifyTeacherEmail(payload);
+	const result = await DeveloperServices.verifyDeveloperEmail(payload);
 
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,
-		message: "Teacher email verified successfully",
+		message: "Developer email verified successfully",
 		data: result,
 	});
 });
 
-const approveTeacher = catchAsync(async (req: Request, res: Response) => {
+const approveDeveloper = catchAsync(async (req: Request, res: Response) => {
 	const payload = req.body;
 	const user = req.user!;
 
-	const result = await TeacherServices.approveTeacher(payload, user);
+	const result = await DeveloperServices.approveDeveloper(payload, user);
 
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,
-		message: "Teacher approved successfully",
+		message: "Developer approved successfully",
 		data: result,
 	});
 });
 
-const getAllTeachers = catchAsync(async (req: Request, res: Response) => {
-	const { data, meta } = await TeacherServices.getAllTeachers(req.query);
+const getAllDevelopers = catchAsync(async (req: Request, res: Response) => {
+	const { data, meta } = await DeveloperServices.getAllDevelopers(req.query);
 
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,
-		message: "Doctor retrieved successfully",
+		message: "Developer retrieved successfully",
 		data: data,
 		meta: meta,
 	});
 });
 
-export const TeacherController = {
-	applyAsTeacher,
-	verifyTeacherEmail,
-	approveTeacher,
-	getAllTeachers,
+export const DeveloperController = {
+	applyAsDeveloper,
+	verifyDeveloperEmail,
+	approveDeveloper,
+	getAllDevelopers,
 };

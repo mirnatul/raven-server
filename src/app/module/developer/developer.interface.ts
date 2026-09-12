@@ -1,11 +1,11 @@
-import { TeacherVerificationStatus } from "../../../generated/prisma/enums";
+import { DeveloperVerificationStatus } from "../../../generated/prisma/enums";
 
-export interface IApplyAsTeacherPayload {
+export interface IApplyAsDeveloperPayload {
 	user: {
 		name: string;
 		email: string;
 	};
-	teacher: {
+	developer: {
 		address?: string;
 		specialization: string;
 		licenseNumber: string;
@@ -17,13 +17,13 @@ export interface IApplyAsTeacherPayload {
 	};
 }
 
-export interface IVerifyTeacherEmailPayload {
+export interface IVerifyDeveloperEmailPayload {
 	email: string;
 	otp: string;
 }
 
-export interface IApproveTeacherPayload {
-	teacherId: string;
-	verificationStatus: TeacherVerificationStatus;
+export interface IApproveDeveloperPayload {
+	developerId: string;
+	verificationStatus: DeveloperVerificationStatus;
 	rejectionReason: string;
 }

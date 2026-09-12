@@ -1,8 +1,8 @@
 enum Role {
   SUPER_ADMIN
   ADMIN
-  TEACHER
-  STUDENT
+  DEVELOPER
+  CLIENT
 }
 
 enum UserStatus {

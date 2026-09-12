@@ -8,19 +8,19 @@ const router = Router();
 // Tips: first auth then zob
 router.post(
 	"/book-appointment",
-	auth(Role.STUDENT),
+	auth(Role.CLIENT),
 	AppointmentController.bookAppointment,
 );
 
 router.post(
 	"/pay-appointment",
-	auth(Role.STUDENT),
+	auth(Role.CLIENT),
 	AppointmentController.payAppointment,
 );
 
 router.post(
 	"/cancel-appointment",
-	auth(Role.STUDENT, Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN),
+	auth(Role.CLIENT, Role.DEVELOPER, Role.ADMIN, Role.SUPER_ADMIN),
 	AppointmentController.cancelAppointment,
 );
 

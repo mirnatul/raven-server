@@ -24,9 +24,9 @@ export default {
 	tester_admin_email: process.env.TESTER_ADMIN_EMAIL!,
 	tester_admin_password: process.env.TESTER_ADMIN_PASSWORD!,
 
-	tester_teacher_name: process.env.TESTER_TEACHER_NAME!,
-	tester_teacher_email: process.env.TESTER_TEACHER_EMAIL!,
-	tester_teacher_password: process.env.TESTER_TEACHER_PASSWORD!,
+	tester_developer_name: process.env.TESTER_DEVELOPER_NAME!,
+	tester_developer_email: process.env.TESTER_DEVELOPER_EMAIL!,
+	tester_developer_password: process.env.TESTER_DEVELOPER_PASSWORD!,
 
 	// REDIS
 	redis_user: process.env.REDIS_USER!,
