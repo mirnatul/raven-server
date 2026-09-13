@@ -20,7 +20,7 @@ router.post(
 
 router.post(
 	"/cancel-appointment",
-	auth(Role.CLIENT, Role.DEVELOPER, Role.ADMIN, Role.SUPER_ADMIN),
+	auth(Role.CLIENT, Role.DEVELOPER, Role.ADMIN, Role.SUPER_ADMIN, Role.PRODUCT_MANAGER),
 	AppointmentController.cancelAppointment,
 );
 

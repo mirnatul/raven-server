@@ -23,13 +23,13 @@ router.post(
 
 router.post(
 	"/approve-doctor",
-	auth(Role.ADMIN, Role.SUPER_ADMIN),
+	auth(Role.ADMIN, Role.SUPER_ADMIN, Role.PRODUCT_MANAGER),
 	DeveloperController.verifyDeveloperEmail,
 );
 
 router.get(
 	"/all-developers",
-	auth(Role.ADMIN, Role.SUPER_ADMIN),
+	auth(Role.ADMIN, Role.SUPER_ADMIN, Role.PRODUCT_MANAGER),
 	DeveloperController.getAllDevelopers,
 );
 

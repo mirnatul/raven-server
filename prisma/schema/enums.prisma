@@ -1,6 +1,7 @@
 enum Role {
   SUPER_ADMIN
   ADMIN
+  PRODUCT_MANAGER
   DEVELOPER
   CLIENT
 }

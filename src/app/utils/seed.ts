@@ -103,6 +103,60 @@ export const seedTesterAdmin = async () => {
 	}
 };
 
+// create tester product manager
+
+export const seedTesterProductManager = async () => {
+	try {
+		const isTesterProductManagerExist = await prisma.user.findUnique({
+			where: {
+				email: config.tester_product_manager_email,
+			},
+		});
+
+		if (isTesterProductManagerExist) {
+			// console.log("Tester Product Manager Already Exists!");
+			return;
+		}
+
+		const name = config.tester_product_manager_name;
+		const email = config.tester_product_manager_email;
+		const password = config.tester_product_manager_password;
+
+		if (!name || !email || !password) {
+			throw new AppError(
+				httpStatus.INTERNAL_SERVER_ERROR,
+				"Tester Product Manager Name , Email, Password Missing In Env File!!!",
+			);
+		}
+
+		const hashedPassword = await bcrypt.hash(
+			password,
+			Number(config.bcrypt_salt_rounds),
+		);
+
+		const testerProductManager = await prisma.user.create({
+			data: {
+				name,
+				email,
+				password: hashedPassword,
+				role: Role.PRODUCT_MANAGER,
+				needPasswordChange: false,
+				emailVerified: true,
+			},
+		});
+
+		console.log("Tester Product Manager Created : ", testerProductManager);
+	} catch (error) {
+		console.log("Error Seeding Tester Product Manager : ", error);
+
+		await prisma.user.delete({
+			where: {
+				email: config.tester_product_manager_email,
+			},
+		});
+	}
+};
+
 // create tester developer
 
 export const seedTesterDeveloper = async () => {

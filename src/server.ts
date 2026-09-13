@@ -8,6 +8,7 @@ import {
 	seedSuperAdmin,
 	seedTesterAdmin,
 	seedTesterDeveloper,
+	seedTesterProductManager,
 } from "./app/utils/seed";
 
 const PORT = config.port;
@@ -25,6 +26,7 @@ const main = async () => {
 
 		await seedSuperAdmin();
 		await seedTesterAdmin();
+		await seedTesterProductManager();
 		await seedTesterDeveloper();
 
 		// corn job
