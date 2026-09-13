@@ -109,7 +109,7 @@ export const seedTesterProductManager = async () => {
 	try {
 		const isTesterProductManagerExist = await prisma.user.findUnique({
 			where: {
-				email: config.tester_product_manager_email,
+				email: config.tester_PROJECT_MANAGER_email,
 			},
 		});
 
@@ -118,9 +118,9 @@ export const seedTesterProductManager = async () => {
 			return;
 		}
 
-		const name = config.tester_product_manager_name;
-		const email = config.tester_product_manager_email;
-		const password = config.tester_product_manager_password;
+		const name = config.tester_PROJECT_MANAGER_name;
+		const email = config.tester_PROJECT_MANAGER_email;
+		const password = config.tester_PROJECT_MANAGER_password;
 
 		if (!name || !email || !password) {
 			throw new AppError(
@@ -139,7 +139,7 @@ export const seedTesterProductManager = async () => {
 				name,
 				email,
 				password: hashedPassword,
-				role: Role.PRODUCT_MANAGER,
+				role: Role.PROJECT_MANAGER,
 				needPasswordChange: false,
 				emailVerified: true,
 			},
@@ -151,7 +151,7 @@ export const seedTesterProductManager = async () => {
 
 		await prisma.user.delete({
 			where: {
-				email: config.tester_product_manager_email,
+				email: config.tester_PROJECT_MANAGER_email,
 			},
 		});
 	}

@@ -1,0 +1,79 @@
+model JobOpening {
+    id String @id @default(uuid())
+
+    // Job information
+    title            String
+    position         JobPosition
+    description      String
+    requirements     String
+    responsibilities String
+    nice_to_have     String
+
+    // Employment details
+    employmentType EmploymentType
+    workplaceType  WorkplaceType
+
+    location String?
+
+    // Compensation
+    salaryMin Decimal? @db.Decimal(10, 2)
+    salaryMax Decimal? @db.Decimal(10, 2)
+
+    // Hiring requirements
+    experienceMin Int?
+    experienceMax Int?
+
+    // Skills required for this position
+    skills Json?
+
+    // Application deadline
+    applicationDeadline DateTime?
+
+    // Opening status
+    status JobOpeningStatus @default(PUBLISHED)
+
+    // Applications
+    applications JobApplication[]
+
+    // Soft delete
+    isDeleted Boolean   @default(false)
+    deletedAt DateTime?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // created by
+    user   User?   @relation(fields: [userId], references: [id])
+    userId String?
+
+    @@index([position])
+    @@index([status])
+    @@map("job_openings")
+}
+
+enum EmploymentType {
+    FULL_TIME
+    PART_TIME
+    CONTRACT
+    INTERNSHIP
+}
+
+enum WorkplaceType {
+    ONSITE
+    REMOTE
+    HYBRID
+}
+
+enum JobOpeningStatus {
+    PUBLISHED
+    CLOSED
+}
+
+enum JobPosition {
+    FRONTEND_DEVELOPER
+    BACKEND_DEVELOPER
+    FULLSTACK_DEVELOPER
+    UI_UX_DESIGNER
+    QA_ENGINEER
+    DEVOPS_ENGINEER
+}

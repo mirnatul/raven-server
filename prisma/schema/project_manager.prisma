@@ -1,16 +1,17 @@
-model Developer {
+model ProjectManager {
     id     String @id @default(uuid())
     userId String @unique
 
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+    bio             String?
+    experienceYears Int?
     specialization  String?
     qualifications  String?
-    experienceYears Int?
-    bio             String?
 
-    employmentStatus  EmploymentStatus @default(ACTIVE)
-    hiredAt           DateTime?
+    joiningDate      DateTime?
+    employmentStatus EmploymentStatus @default(ACTIVE)
+
     terminatedAt      DateTime?
     terminationReason String?
 
@@ -21,13 +22,11 @@ model Developer {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    @@index([employmentStatus])
-    @@map("developers")
+    @@map("project_managers")
 }
 
-enum EmploymentStatus {
-    ACTIVE
-    ON_LEAVE
-    SUSPENDED
-    TERMINATED
+enum ProjectManagerVerificationStatus {
+    PENDING
+    APPROVED
+    REJECTED
 }

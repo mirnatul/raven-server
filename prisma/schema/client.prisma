@@ -1,20 +1,17 @@
 model Client {
-  id String @id @default(uuid(7))
+  id String @id @default(uuid())
 
-  name          String
-  email         String    @unique
-  contactNumber String?
-  address       String?
-  isDeleted     Boolean   @default(false)
-  deletedAt     DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  //relations
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  @@index([email], name: "idx_client_email")
-  @@index([isDeleted], name: "idx_client_isDeleted")
+  name        String
+  companyName String?
+  phone       String
+  address     String
+  bio         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("clients")
 }

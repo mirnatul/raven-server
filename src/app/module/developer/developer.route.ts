@@ -22,14 +22,14 @@ router.post(
 );
 
 router.post(
-	"/approve-doctor",
-	auth(Role.ADMIN, Role.SUPER_ADMIN, Role.PRODUCT_MANAGER),
+	"/hired-developer",
+	auth(Role.ADMIN, Role.SUPER_ADMIN, Role.PROJECT_MANAGER),
 	DeveloperController.verifyDeveloperEmail,
 );
 
 router.get(
 	"/all-developers",
-	auth(Role.ADMIN, Role.SUPER_ADMIN, Role.PRODUCT_MANAGER),
+	auth(Role.ADMIN, Role.SUPER_ADMIN, Role.PROJECT_MANAGER),
 	DeveloperController.getAllDevelopers,
 );
 

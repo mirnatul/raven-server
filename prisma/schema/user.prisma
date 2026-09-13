@@ -1,26 +1,33 @@
 model User {
-  id                 String       @id @default(uuid())
-  name               String
-  email              String
-  password           String?
-  googleId           String?      @unique
-  authProvider       AuthProvider @default(CREDENTIAL)
-  emailVerified      Boolean      @default(false)
-  role               Role         @default(CLIENT)
-  status             UserStatus   @default(ACTIVE)
-  needPasswordChange Boolean      @default(false)
-  isDeleted          Boolean      @default(false)
+  id String @id @default(uuid())
+
+  name          String
+  email         String  @unique
+  contactNumber String?
+  address       String?
+
+  password      String?
+  googleId      String?      @unique
+  authProvider  AuthProvider @default(CREDENTIAL)
+  emailVerified Boolean      @default(false)
 
   imageUrl      String?
   imagePublicId String?
 
+  status             UserStatus @default(ACTIVE)
+  needPasswordChange Boolean    @default(false)
+
+  isDeleted Boolean   @default(false)
   deletedAt DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
 
-  client Client?
-  developer Developer?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@unique([email])
+  client         Client?
+  developer      Developer?
+  projectManager ProjectManager?
+  jobOpenings    JobOpening[]
+  jobApplication JobApplication[]
+
   @@map("users")
 }
