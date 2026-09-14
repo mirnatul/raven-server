@@ -3,38 +3,104 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Application Approved</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Application Approved - Raven</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f7f7f7;
-            color: #333;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7f6;
+            color: #374151;
         }
 
         .container {
             max-width: 500px;
             margin: 40px auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            background: #ffffff;
+            padding: 35px;
+            border-radius: 16px;
+            border: 1px solid #e2ebe6;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .logo {
+            text-align: center;
+            color: #007a55;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #101b18;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .success-box {
+            background: #f0f7f3;
+            border: 1px solid #d5e8df;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 25px 0;
+            color: #007a55;
+            font-weight: bold;
         }
 
         .footer {
             margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5eee9;
             font-size: 12px;
-            color: #888;
+            color: #9aaa9f;
+            text-align: center;
         }
     </style>
 </head>
 
 <body>
+
     <div class="container">
-        <h2>Congratulations, <%= name %>!</h2>
-        <p>Your application to join Pathshala as a developer has been reviewed and approved.</p>
-        <p>You can now log in and start managing your schedule and consultations.</p>
-        <div class="footer">&copy; Pathshala. All rights reserved.</div>
+
+        <div class="logo">
+            RAVEN
+        </div>
+
+        <h2>Congratulations, <%= name %>! 🎉</h2>
+
+        <p>
+            We're pleased to inform you that your application to join
+            <strong>Raven</strong> as a developer has been reviewed and approved.
+        </p>
+
+        <div class="success-box">
+            Your developer application has been approved.
+        </div>
+
+        <p>
+            Welcome to the team! You can now log in to your Raven account
+            and complete your profile, manage your availability, and
+            prepare to work on exciting projects with our team.
+        </p>
+
+        <p>
+            We look forward to building something remarkable together.
+        </p>
+
+        <div class="footer">
+            &copy; <%= new Date().getFullYear() %> Raven. All rights reserved.
+                <br />
+                See what's next. Build what matters.
+        </div>
+
     </div>
+
 </body>
 
 </html>

@@ -1,19 +1,18 @@
-import { DeveloperVerificationStatus } from "../../../generated/prisma/enums";
-
 export interface IApplyAsDeveloperPayload {
 	user: {
 		name: string;
 		email: string;
+		contactNumber?: string;
+		address?: string;
 	};
 	developer: {
-		address?: string;
-		specialization: string;
-		licenseNumber: string;
-		qualifications: string;
-		experienceYears: number;
+		specialization?: string;
+		qualifications?: string;
+		experienceYears?: number;
 		bio?: string;
-		consultationFee?: number;
-		contactNumber?: string;
+		portfolioUrl?: string;
+		githubUrl?: string;
+		linkedinUrl?: string;
 	};
 }
 
@@ -22,8 +21,6 @@ export interface IVerifyDeveloperEmailPayload {
 	otp: string;
 }
 
-export interface IApproveDeveloperPayload {
+export interface IHireDeveloperPayload {
 	developerId: string;
-	verificationStatus: DeveloperVerificationStatus;
-	rejectionReason: string;
 }

@@ -1,6 +1,6 @@
 import cron from "node-cron";
 import { prisma } from "./prisma";
-import { Role, DeveloperVerificationStatus } from "../../generated/prisma/enums";
+import { Role } from "../../generated/prisma/enums";
 
 export const deleteUnverifiedDevelopers = async () => {
 	cron.schedule("*/10 * * * *", async () => {
@@ -13,9 +13,7 @@ export const deleteUnverifiedDevelopers = async () => {
 					role: Role.DEVELOPER,
 					emailVerified: false,
 					createdAt: { lt: oneHourAgo },
-					developer: {
-						verificationStatus: DeveloperVerificationStatus.PENDING,
-					},
+					developer: { isNot: null },
 				},
 			});
 

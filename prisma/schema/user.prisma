@@ -11,6 +11,8 @@ model User {
   authProvider  AuthProvider @default(CREDENTIAL)
   emailVerified Boolean      @default(false)
 
+  role Role @default(CLIENT)
+
   imageUrl      String?
   imagePublicId String?
 

@@ -16,21 +16,9 @@ export default {
 	jwt_refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN!,
 	google_client_id: process.env.GOOGLE_CLILENT_ID!,
 
-	super_admin_name: process.env.SUPER_ADMIN_NAME!,
-	super_admin_email: process.env.SUPER_ADMIN_EMAIL!,
-	super_admin_password: process.env.SUPER_ADMIN_PASSWORD!,
-
-	tester_admin_name: process.env.TESTER_ADMIN_NAME!,
-	tester_admin_email: process.env.TESTER_ADMIN_EMAIL!,
-	tester_admin_password: process.env.TESTER_ADMIN_PASSWORD!,
-
-	tester_developer_name: process.env.TESTER_DEVELOPER_NAME!,
-	tester_developer_email: process.env.TESTER_DEVELOPER_EMAIL!,
-	tester_developer_password: process.env.TESTER_DEVELOPER_PASSWORD!,
-
-	tester_PROJECT_MANAGER_name: process.env.TESTER_PROJECT_MANAGER_NAME!,
-	tester_PROJECT_MANAGER_email: process.env.TESTER_PROJECT_MANAGER_EMAIL!,
-	tester_PROJECT_MANAGER_password: process.env.TESTER_PROJECT_MANAGER_PASSWORD!,
+	admin_name: process.env.ADMIN_NAME!,
+	admin_email: process.env.ADMIN_EMAIL!,
+	admin_password: process.env.ADMIN_PASSWORD!,
 
 	// REDIS
 	redis_user: process.env.REDIS_USER!,

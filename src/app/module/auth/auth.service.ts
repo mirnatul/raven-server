@@ -12,7 +12,7 @@ import type {
 	IForgotPasswordPayload,
 	IGoogleLoginPayload,
 	ILoginUserPayload,
-	IRegisterPatientPayload,
+	IRegisterClientPayload,
 	IRequestUser,
 	IResetPasswordPayload,
 	IVerifyEmailPayload,
@@ -28,7 +28,7 @@ import path from "path";
 import { AppError } from "../../utils/AppError";
 import httpStatus from "http-status";
 
-const registerPatient = async (payload: IRegisterPatientPayload) => {
+const registerClient = async (payload: IRegisterClientPayload) => {
 	const { name, password, client: clientData } = payload;
 
 	const email = payload.email.trim().toLowerCase();
@@ -140,7 +140,7 @@ const verifyClientEmail = async (payload: IVerifyEmailPayload) => {
 		);
 	}
 
-	const clientPayload: IRegisterPatientPayload = JSON.parse(redisClientData);
+	const clientPayload: IRegisterClientPayload = JSON.parse(redisClientData);
 
 	const createdUser = await prisma.user.create({
 		data: {
@@ -152,9 +152,10 @@ const verifyClientEmail = async (payload: IVerifyEmailPayload) => {
 			emailVerified: true,
 			client: {
 				create: {
-					name: clientPayload.name,
-					email: clientPayload.email,
-					contactNumber: clientPayload?.client?.contactNumber || null,
+					companyName: clientPayload?.client?.companyName || null,
+					phone: clientPayload?.client?.phone,
+					address: clientPayload?.client?.address,
+					bio: clientPayload?.client?.bio || null,
 				},
 			},
 		},
@@ -176,7 +177,7 @@ const verifyClientEmail = async (payload: IVerifyEmailPayload) => {
 	await transporter.sendMail({
 		from: config.email_sender,
 		to: email,
-		subject: "Welcome to Pathshala",
+		subject: "Welcome to Raven",
 		html,
 	});
 
@@ -239,10 +240,12 @@ const loginUser = async (payload: ILoginUserPayload) => {
 const getMe = async (user: IRequestUser) => {
 	const isUserExists = await prisma.user.findUnique({
 		where: {
-			id: user.id,
+			id: user.userId,
 		},
 		include: {
 			client: true,
+			developer: true,
+			projectManager: true,
 		},
 		omit: {
 			password: true,
@@ -293,7 +296,6 @@ const refreshToken = async (token: string) => {
 };
 
 const googleLogin = async (payload: IGoogleLoginPayload) => {
-	// console.log("service hit");
 	let googleIdTokenPayload: TokenPayload | null | undefined = null;
 	try {
 		const ticket = await googleClient.verifyIdToken({
@@ -309,6 +311,7 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 			"Invalid or Expired Google ID Token",
 		);
 	}
+	// console.log(googleIdTokenPayload);
 
 	if (!googleIdTokenPayload) {
 		throw new AppError(
@@ -369,6 +372,13 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 			});
 		} else {
 			// google register
+			// client schema requires phone & address
+			if (!payload.client?.phone || !payload.client?.address) {
+				throw new AppError(
+					httpStatus.BAD_REQUEST,
+					"Phone and address are required to register with Google",
+				);
+			}
 			user = await prisma.user.create({
 				data: {
 					name: googleIdTokenPayload.name,
@@ -379,8 +389,10 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 					emailVerified: true,
 					client: {
 						create: {
-							name: googleIdTokenPayload.name,
-							email: googleIdTokenPayload.email,
+							companyName: payload.client?.companyName,
+							phone: payload.client.phone,
+							address: payload.client.address,
+							bio: payload.client?.bio,
 						},
 					},
 				},
@@ -398,7 +410,7 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 			await transporter.sendMail({
 				from: config.email_sender,
 				to: user.email,
-				subject: "Welcome to Pathshala",
+				subject: "Welcome to Raven",
 				html,
 			});
 		}
@@ -543,7 +555,7 @@ const resetPassword = async (payload: IResetPasswordPayload) => {
 };
 
 export const AuthService = {
-	registerPatient,
+	registerClient,
 	verifyClientEmail,
 	loginUser,
 	getMe,

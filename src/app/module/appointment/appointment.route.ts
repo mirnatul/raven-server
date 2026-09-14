@@ -24,7 +24,6 @@ router.post(
 		Role.CLIENT,
 		Role.DEVELOPER,
 		Role.ADMIN,
-		Role.SUPER_ADMIN,
 		Role.PROJECT_MANAGER,
 	),
 	AppointmentController.cancelAppointment,

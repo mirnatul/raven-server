@@ -60,8 +60,7 @@ app.get("/test", async (req: Request, res: Response, next: NextFunction) => {
 app.get("/", async (req: Request, res: Response) => {
 	res.status(httpStatus.OK).json({
 		success: true,
-		message:
-			"Welcome to RAVEN - a software solutions that take order, complete (using kanban board), and deliver",
+		message: "Welcome to RAVEN - A Digital Agency Project Management Platform",
 	});
 });
 

@@ -10,11 +10,12 @@ const ClientRegistrationZodSchema = z.object({
 		.regex(/[a-z]/, "must contain 1 lowercase")
 		.regex(/[0-9]/, "must contain 1 number")
 		.regex(/[^A-Za-z0-9]/, "must contain 1 special character"),
-	client: z
-		.object({
-			contactNumber: z.string().optional(),
-		})
-		.optional(),
+	client: z.object({
+		companyName: z.string().max(150).optional(),
+		phone: z.string().trim().min(5, "Phone number is invalid"),
+		address: z.string().min(3, "Address is too small"),
+		bio: z.string().max(1000).optional(),
+	}),
 });
 
 const LoginZodSchema = z.object({

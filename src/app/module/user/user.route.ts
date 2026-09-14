@@ -12,7 +12,6 @@ router.patch(
 	auth(
 		Role.ADMIN,
 		Role.CLIENT,
-		Role.SUPER_ADMIN,
 		Role.DEVELOPER,
 		Role.PROJECT_MANAGER,
 	),

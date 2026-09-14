@@ -4,12 +4,7 @@ import { deleteUnverifiedDevelopers } from "./app/lib/corn";
 import { transporter } from "./app/lib/nodemailer";
 import { prisma } from "./app/lib/prisma";
 import { redisClient } from "./app/lib/redis";
-import {
-	seedSuperAdmin,
-	seedTesterAdmin,
-	seedTesterDeveloper,
-	seedTesterProductManager,
-} from "./app/utils/seed";
+import { seedAdmin } from "./app/utils/seed";
 
 const PORT = config.port;
 
@@ -24,10 +19,7 @@ const main = async () => {
 		await transporter.verify();
 		console.log("nodemailer connected successfully");
 
-		await seedSuperAdmin();
-		await seedTesterAdmin();
-		await seedTesterProductManager();
-		await seedTesterDeveloper();
+		await seedAdmin();
 
 		// corn job
 		await deleteUnverifiedDevelopers();

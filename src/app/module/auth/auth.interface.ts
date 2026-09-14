@@ -5,12 +5,15 @@ export interface ILoginUserPayload {
 	password: string;
 }
 
-export interface IRegisterPatientPayload {
+export interface IRegisterClientPayload {
 	name: string;
 	email: string;
 	password: string;
 	client: {
-		contactNumber?: string;
+		companyName?: string;
+		phone: string;
+		address: string;
+		bio?: string;
 	};
 }
 
@@ -20,7 +23,7 @@ export interface IVerifyEmailPayload {
 }
 
 export interface IRequestUser {
-	id: string;
+	userId: string;
 	email: string;
 	name: string;
 	role: Role;
@@ -28,6 +31,12 @@ export interface IRequestUser {
 
 export interface IGoogleLoginPayload {
 	idToken: string;
+	client?: {
+		companyName?: string;
+		phone?: string;
+		address?: string;
+		bio?: string;
+	};
 }
 
 export interface IForgotPasswordPayload {
