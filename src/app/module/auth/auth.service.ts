@@ -29,7 +29,7 @@ import { AppError } from "../../utils/AppError";
 import httpStatus from "http-status";
 
 const registerClient = async (payload: IRegisterClientPayload) => {
-	const { name, password, client: clientData } = payload;
+	const { name, password } = payload;
 
 	const email = payload.email.trim().toLowerCase();
 
@@ -65,7 +65,10 @@ const registerClient = async (payload: IRegisterClientPayload) => {
 		password: hashedPassword,
 		role: Role.CLIENT,
 		status: UserStatus.ACTIVE,
-		client: clientData,
+		contactNumber: payload.contactNumber,
+		address: payload.address,
+		companyName: payload.companyName,
+		bio: payload.bio,
 	};
 	const clientRegistrationKey = `clientRegistration-data:${payload.email}`;
 
@@ -150,12 +153,12 @@ const verifyClientEmail = async (payload: IVerifyEmailPayload) => {
 			role: Role.CLIENT,
 			status: UserStatus.ACTIVE,
 			emailVerified: true,
+			contactNumber: clientPayload.contactNumber,
+			address: clientPayload.address,
 			client: {
 				create: {
-					companyName: clientPayload?.client?.companyName || null,
-					phone: clientPayload?.client?.phone,
-					address: clientPayload?.client?.address,
-					bio: clientPayload?.client?.bio || null,
+					companyName: clientPayload?.companyName || null,
+					bio: clientPayload?.bio || null,
 				},
 			},
 		},
@@ -373,7 +376,7 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 		} else {
 			// google register
 			// client schema requires phone & address
-			if (!payload.client?.phone || !payload.client?.address) {
+			if (!payload.client?.contactNumber || !payload.client?.address) {
 				throw new AppError(
 					httpStatus.BAD_REQUEST,
 					"Phone and address are required to register with Google",
@@ -387,11 +390,11 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 					googleId: googleIdTokenPayload.sub,
 					authProvider: AuthProvider.GOOGLE,
 					emailVerified: true,
+					contactNumber: payload.client.contactNumber,
+					address: payload.client.address,
 					client: {
 						create: {
 							companyName: payload.client?.companyName,
-							phone: payload.client.phone,
-							address: payload.client.address,
 							bio: payload.client?.bio,
 						},
 					},

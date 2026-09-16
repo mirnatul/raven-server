@@ -9,12 +9,10 @@ export interface IRegisterClientPayload {
 	name: string;
 	email: string;
 	password: string;
-	client: {
-		companyName?: string;
-		phone: string;
-		address: string;
-		bio?: string;
-	};
+	contactNumber: string;
+	address: string;
+	companyName?: string;
+	bio?: string;
 }
 
 export interface IVerifyEmailPayload {
@@ -33,7 +31,7 @@ export interface IGoogleLoginPayload {
 	idToken: string;
 	client?: {
 		companyName?: string;
-		phone?: string;
+		contactNumber?: string;
 		address?: string;
 		bio?: string;
 	};

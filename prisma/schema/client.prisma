@@ -5,8 +5,6 @@ model Client {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   companyName String?
-  phone       String
-  address     String
   bio         String?
 
   createdAt DateTime @default(now())
