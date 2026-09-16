@@ -27,3 +27,14 @@ export interface IVerifyDeveloperEmailPayload {
 export interface IHireDeveloperPayload {
 	applicationId: string;
 }
+
+export interface IUpdateDeveloperProfilePayload {
+	title?: string;
+	bio?: string;
+	experienceYears?: number;
+	specialization?: string;
+	qualifications?: string;
+	portfolioUrl?: string;
+	githubUrl?: string;
+	linkedinUrl?: string;
+}

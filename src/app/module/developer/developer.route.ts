@@ -6,6 +6,7 @@ import { validateRequest } from "../../middleware/validateRequest";
 import {
 	ApplyForJobValidationZodSchema,
 	HireDeveloperValidationZodSchema,
+	UpdateDeveloperProfileValidationSchema,
 } from "./developer.validation";
 import { upload } from "../../lib/multer";
 
@@ -28,6 +29,13 @@ router.get(
 	"/all-developers",
 	auth(Role.ADMIN, Role.PROJECT_MANAGER),
 	DeveloperController.getAllDevelopers,
+);
+
+router.patch(
+	"/developer-profile",
+	auth(Role.ADMIN, Role.DEVELOPER, Role.PROJECT_MANAGER),
+	validateRequest(UpdateDeveloperProfileValidationSchema),
+	DeveloperController.updateDeveloperProfile,
 );
 
 export const DeveloperRoutes = router;

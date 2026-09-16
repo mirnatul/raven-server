@@ -26,4 +26,17 @@ const uploadProfileImage = catchAsync(
 	}),
 );
 
-export const UserController = { uploadProfileImage };
+const updateMyProfile = catchAsync(async (req: Request, res: Response) => {
+	const userId = req.user?.userId as string;
+
+	const result = await UserServices.updateMyProfile(userId, req.body);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Profile updated successfully",
+		data: result,
+	});
+});
+
+export const UserController = { uploadProfileImage, updateMyProfile };

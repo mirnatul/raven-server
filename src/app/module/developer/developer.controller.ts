@@ -60,8 +60,27 @@ const getAllDevelopers = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const updateDeveloperProfile = catchAsync(
+	async (req: Request, res: Response) => {
+		const userId = req.user?.userId as string;
+
+		const result = await DeveloperServices.updateDeveloperProfile(
+			userId,
+			req.body,
+		);
+
+		sendResponse(res, {
+			statusCode: httpStatus.OK,
+			success: true,
+			message: "Developer profile updated successfully",
+			data: result,
+		});
+	},
+);
+
 export const DeveloperController = {
 	applyForJob,
 	hireApplicant,
 	getAllDevelopers,
+	updateDeveloperProfile,
 };

@@ -48,3 +48,45 @@ export const ApplyForJobValidationZodSchema = z.object({
 export const HireDeveloperValidationZodSchema = z.object({
 	applicationId: z.string().min(1, "Developer id is required"),
 });
+
+export const UpdateDeveloperProfileValidationSchema = z.object({
+	body: z.object({
+		title: z
+			.string()
+			.trim()
+			.min(2, "Title must be at least 2 characters")
+			.max(100, "Title must not exceed 100 characters")
+			.optional(),
+
+		bio: z
+			.string()
+			.trim()
+			.max(1000, "Bio must not exceed 1000 characters")
+			.optional(),
+
+		experienceYears: z
+			.number()
+			.int()
+			.min(0, "Experience years cannot be negative")
+			.max(50, "Experience years must not exceed 50")
+			.optional(),
+
+		specialization: z
+			.string()
+			.trim()
+			.max(200, "Specialization must not exceed 200 characters")
+			.optional(),
+
+		qualifications: z
+			.string()
+			.trim()
+			.max(1000, "Qualifications must not exceed 1000 characters")
+			.optional(),
+
+		portfolioUrl: z.url("Please provide a valid portfolio URL").optional(),
+
+		githubUrl: z.url("Please provide a valid GitHub URL").optional(),
+
+		linkedinUrl: z.url("Please provide a valid LinkedIn URL").optional(),
+	}),
+});

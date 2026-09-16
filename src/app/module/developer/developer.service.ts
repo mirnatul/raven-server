@@ -10,6 +10,7 @@ import { transporter } from "../../lib/nodemailer";
 import {
 	IApplyForJobPayload,
 	IHireDeveloperPayload,
+	IUpdateDeveloperProfilePayload,
 } from "./developer.interface";
 import { IQuery } from "../../interfaces";
 import { DeveloperWhereInput } from "../../../generated/prisma/models";
@@ -301,8 +302,60 @@ const getAllDevelopers = async (query: IQuery) => {
 	};
 };
 
+const updateDeveloperProfile = async (
+	userId: string,
+	payload: IUpdateDeveloperProfilePayload,
+) => {
+	const developer = await prisma.developer.findUnique({
+		where: {
+			userId,
+		},
+	});
+
+	if (!developer) {
+		throw new AppError(404, "Developer profile not found");
+	}
+
+	const updatedDeveloper = await prisma.developer.update({
+		where: {
+			userId,
+		},
+		data: {
+			title: payload.title,
+			bio: payload.bio,
+			experienceYears: payload.experienceYears,
+			specialization: payload.specialization,
+			qualifications: payload.qualifications,
+			portfolioUrl: payload.portfolioUrl,
+			githubUrl: payload.githubUrl,
+			linkedinUrl: payload.linkedinUrl,
+		},
+		select: {
+			id: true,
+			userId: true,
+			title: true,
+			resume: true,
+			resumePublicId: true,
+			bio: true,
+			experienceYears: true,
+			specialization: true,
+			qualifications: true,
+			joiningDate: true,
+			employmentStatus: true,
+			portfolioUrl: true,
+			githubUrl: true,
+			linkedinUrl: true,
+			createdAt: true,
+			updatedAt: true,
+		},
+	});
+
+	return updatedDeveloper;
+};
+
 export const DeveloperServices = {
 	applyForJob,
 	hireApplicant,
 	getAllDevelopers,
+	updateDeveloperProfile,
 };
