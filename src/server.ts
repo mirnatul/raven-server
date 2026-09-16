@@ -5,6 +5,7 @@ import { transporter } from "./app/lib/nodemailer";
 import { prisma } from "./app/lib/prisma";
 import { redisClient } from "./app/lib/redis";
 import { seedAdmin } from "./app/utils/seed";
+import { seedServices } from "./app/utils/seedService";
 
 const PORT = config.port;
 
@@ -20,6 +21,7 @@ const main = async () => {
 		console.log("nodemailer connected successfully");
 
 		await seedAdmin();
+		await seedServices();
 
 		// corn job
 		// await deleteUnverifiedDevelopers();
