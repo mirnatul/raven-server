@@ -4,13 +4,18 @@ model Developer {
 
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+    title          String
+    resume         String
+    resumePublicId String
+
+    bio             String?
+    experienceYears Int?
     specialization  String?
     qualifications  String?
-    experienceYears Int?
-    bio             String?
 
-    employmentStatus  EmploymentStatus @default(ACTIVE)
-    hiredAt           DateTime?
+    joiningDate      DateTime?
+    employmentStatus EmploymentStatus @default(NOT_EMPLOYED_YET)
+
     terminatedAt      DateTime?
     terminationReason String?
 
@@ -26,6 +31,7 @@ model Developer {
 }
 
 enum EmploymentStatus {
+    NOT_EMPLOYED_YET
     ACTIVE
     ON_LEAVE
     SUSPENDED

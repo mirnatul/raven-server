@@ -1,6 +1,9 @@
 import bcrypt from "bcryptjs";
+
 import { Role } from "../../generated/prisma/enums";
+
 import { prisma } from "../lib/prisma";
+
 import config from "../config";
 
 export const seedAdmin = async () => {
@@ -10,8 +13,8 @@ export const seedAdmin = async () => {
 				email: config.admin_email,
 			},
 		});
+
 		if (isAdminExist) {
-			// console.log("Admin already exists!");
 			return;
 		}
 
@@ -29,20 +32,18 @@ export const seedAdmin = async () => {
 				name,
 				email,
 				password: hashedPassword,
+
+				contactNumber: "01700000000",
+				address: "Dhaka, Bangladesh",
+
 				role: Role.ADMIN,
 				needPasswordChange: false,
 				emailVerified: true,
 			},
 		});
 
-		console.log("Admin created", admin);
+		console.log("Admin created", admin.email);
 	} catch (error) {
 		console.log("Error seeding admin", error);
-
-		await prisma.user.delete({
-			where: {
-				email: config.admin_email,
-			},
-		});
 	}
 };

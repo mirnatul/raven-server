@@ -10,7 +10,7 @@ model ProjectManager {
     qualifications  String?
 
     joiningDate      DateTime?
-    employmentStatus EmploymentStatus @default(ACTIVE)
+    employmentStatus EmploymentStatus @default(NOT_EMPLOYED_YET)
 
     terminatedAt      DateTime?
     terminationReason String?
@@ -22,11 +22,6 @@ model ProjectManager {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
+    @@index([employmentStatus])
     @@map("project_managers")
-}
-
-enum ProjectManagerVerificationStatus {
-    PENDING
-    APPROVED
-    REJECTED
 }

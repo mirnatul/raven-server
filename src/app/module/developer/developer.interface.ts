@@ -1,19 +1,22 @@
-export interface IApplyAsDeveloperPayload {
-	user: {
-		name: string;
-		email: string;
-		contactNumber?: string;
-		address?: string;
-	};
-	developer: {
-		specialization?: string;
-		qualifications?: string;
-		experienceYears?: number;
-		bio?: string;
-		portfolioUrl?: string;
-		githubUrl?: string;
-		linkedinUrl?: string;
-	};
+import { Prisma } from "../../../generated/prisma/client";
+
+export interface IApplyForJobPayload {
+	jobOpeningId: string;
+
+	name: string;
+	email: string;
+	contactNumber: string;
+	address: string;
+
+	additionalFiles?: Prisma.InputJsonValue;
+
+	coverLetter?: string;
+	portfolioUrl?: string;
+	githubUrl?: string;
+	linkedinUrl?: string;
+
+	expectedSalary?: number;
+	availableFrom?: Date;
 }
 
 export interface IVerifyDeveloperEmailPayload {
@@ -22,5 +25,5 @@ export interface IVerifyDeveloperEmailPayload {
 }
 
 export interface IHireDeveloperPayload {
-	developerId: string;
+	applicationId: string;
 }

@@ -1,6 +1,6 @@
 import app from "./app";
 import config from "./app/config";
-import { deleteUnverifiedDevelopers } from "./app/lib/corn";
+// import { deleteUnverifiedDevelopers } from "./app/lib/corn";
 import { transporter } from "./app/lib/nodemailer";
 import { prisma } from "./app/lib/prisma";
 import { redisClient } from "./app/lib/redis";
@@ -22,7 +22,7 @@ const main = async () => {
 		await seedAdmin();
 
 		// corn job
-		await deleteUnverifiedDevelopers();
+		// await deleteUnverifiedDevelopers();
 
 		app.listen(PORT, () => {
 			console.log(`Server is running on port ${PORT}`);

@@ -4,50 +4,18 @@ import { DeveloperServices } from "./developer.service";
 import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from "http-status";
 import {
-	ApplyAsDeveloperValidationZodSchema,
+	ApplyForJobValidationZodSchema,
 	HireDeveloperValidationZodSchema,
 } from "./developer.validation";
 import { AppError } from "../../utils/AppError";
 
-const applyAsDeveloper = catchAsync(async (req: Request, res: Response) => {
-	const zodValidationResult =
-		ApplyAsDeveloperValidationZodSchema.safeParse(req.body);
-
-	if (!zodValidationResult.success) {
-		throw new AppError(
-			httpStatus.BAD_REQUEST,
-			zodValidationResult.error.issues[0].message,
-		);
+const applyForJob = catchAsync(async (req: Request, res: Response) => {
+	if (!req.file) {
+		throw new AppError(httpStatus.BAD_REQUEST, "Resume is required");
 	}
 
-	const result = await DeveloperServices.applyAsDeveloper(
-		zodValidationResult.data,
-	);
-
-	sendResponse(res, {
-		statusCode: httpStatus.OK,
-		success: true,
-		message: "Applied as developer successfully",
-		data: result,
-	});
-});
-
-const verifyDeveloperEmail = catchAsync(async (req: Request, res: Response) => {
-	const payload = req.body;
-
-	const result = await DeveloperServices.verifyDeveloperEmail(payload);
-
-	sendResponse(res, {
-		statusCode: httpStatus.OK,
-		success: true,
-		message: "Developer email verified successfully",
-		data: result,
-	});
-});
-
-const hireDeveloper = catchAsync(async (req: Request, res: Response) => {
-	const zodValidationResult = HireDeveloperValidationZodSchema.safeParse(
-		req.body,
+	const zodValidationResult = ApplyForJobValidationZodSchema.safeParse(
+		JSON.parse(req.body.data),
 	);
 
 	if (!zodValidationResult.success) {
@@ -57,14 +25,25 @@ const hireDeveloper = catchAsync(async (req: Request, res: Response) => {
 		);
 	}
 
-	const result = await DeveloperServices.hireDeveloper(
-		zodValidationResult.data,
-	);
+	const payload = zodValidationResult.data;
+
+	const result = await DeveloperServices.applyForJob(payload, req.file.buffer);
+
+	sendResponse(res, {
+		statusCode: httpStatus.CREATED,
+		success: true,
+		message: "Job application submitted successfully",
+		data: result,
+	});
+});
+
+const hireApplicant = catchAsync(async (req: Request, res: Response) => {
+	const result = await DeveloperServices.hireApplicant(req.body);
 
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
 		success: true,
-		message: "Developer hired successfully",
+		message: "Hired Successfully",
 		data: result,
 	});
 });
@@ -82,8 +61,7 @@ const getAllDevelopers = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const DeveloperController = {
-	applyAsDeveloper,
-	verifyDeveloperEmail,
-	hireDeveloper,
+	applyForJob,
+	hireApplicant,
 	getAllDevelopers,
 };
