@@ -9,29 +9,7 @@ const router = Router();
 router.post(
 	"/book-appointment",
 	auth(Role.CLIENT),
-	AppointmentController.bookAppointment,
+	AppointmentController.requestService,
 );
 
-router.post(
-	"/pay-appointment",
-	auth(Role.CLIENT),
-	AppointmentController.payAppointment,
-);
-
-router.post(
-	"/cancel-appointment",
-	auth(
-		Role.CLIENT,
-		Role.DEVELOPER,
-		Role.ADMIN,
-		Role.PROJECT_MANAGER,
-	),
-	AppointmentController.cancelAppointment,
-);
-
-// called by bkash callback - automatically
-router.get(
-	"/book-appointment/payment/callback",
-	AppointmentController.bookAppointmentCallback,
-);
 export const AppointmentRoutes = router;

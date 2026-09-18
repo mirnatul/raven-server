@@ -27,9 +27,10 @@ model User {
 
   client         Client?
   developer      Developer?
-  projectManager ProjectManager?
   jobOpenings    JobOpening[]
   jobApplication JobApplication[]
+  projectMembers ProjectMember[]
+  tasks          Task[]
 
   @@map("users")
 }

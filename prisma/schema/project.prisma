@@ -1,0 +1,40 @@
+model Project {
+    id String @id @default(uuid())
+
+    // Original request
+    serviceRequestId String         @unique
+    serviceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id])
+
+    // Client
+    clientId String
+    client   Client @relation(fields: [clientId], references: [id])
+
+    // Project information
+    title       String
+    description String
+    budget      Decimal
+    startDate   DateTime?
+    deadline    DateTime?
+
+    // Project management
+    projectManagerId String?
+    projectManager   Developer? @relation(fields: [projectManagerId], references: [id])
+
+    status ProjectStatus @default(PLANNING)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    members ProjectMember[]
+    tasks   Task[]
+}
+
+enum ProjectStatus {
+    PLANNING
+    IN_PROGRESS
+    CLIENT_REVIEW
+    COMPLETED
+    CANCELLED
+    ARCHIVED
+}
