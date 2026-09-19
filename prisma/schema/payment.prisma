@@ -3,8 +3,8 @@ model Payment {
 
     status PaymentStatus @default(UNPAID)
 
-    amount   Decimal @db.Decimal(10, 2)
-    currency String  @default("BDT")
+    amount   Int
+    currency String @default("BDT")
 
     paymentGateway        String  @default("bKash")
     merchantInvoiceNumber String // we will use appointmentId
@@ -16,7 +16,7 @@ model Payment {
     gateWayResponse Json? // store the response from the payment gateway
 
     refundTrxId  String? // store the refund transaction id if any
-    refundAmount Decimal? @db.Decimal(10, 2)
+    refundAmount Int?
     refundReason String?
     refundedAt   String? // as the time format is not matching to prisma postgres date time
 
