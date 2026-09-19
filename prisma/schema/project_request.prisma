@@ -1,4 +1,4 @@
-model ServiceRequest {
+model ProjectRequest {
     id String @id @default(uuid())
 
     // Client
@@ -10,29 +10,26 @@ model ServiceRequest {
     service   Service @relation(fields: [serviceId], references: [id])
 
     // Contact information
-    name          String
-    email         String
-    contactNumber String
-    message       String
+    projectDescription String
 
     // Admin decision
-    status ServiceRequestStatus @default(PENDING)
+    status ProjectRequestStatus @default(UNDER_REVIEW)
 
     // Proposed project information
     proposedPrice Decimal?
     adminMessage  String?
 
+    payment Payment?
     project Project?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
 
-enum ServiceRequestStatus {
-    PENDING
+enum ProjectRequestStatus {
     UNDER_REVIEW
-    PRICE_PROPOSED
-    APPROVED
+    OFFER_PROJECT_PRICE
+    PAID
     REJECTED
     CANCELLED
 }

@@ -13,13 +13,11 @@ import { notFound } from "./app/middleware/notFound";
 import { AuthRoutes } from "./app/module/auth/auth.route";
 import { redisClient } from "./app/lib/redis";
 
-import crypto from "crypto";
 import { UserRoutes } from "./app/module/user/user.route";
 import { getBkashIdToken } from "./app/lib/bkash";
-import { AppointmentRoutes } from "./app/module/appointment/appointment.route";
+import { ProjectRoutes } from "./app/module/project/project.route";
 import { DeveloperRoutes } from "./app/module/developer/developer.route";
 import { CareerRoutes } from "./app/module/career/career.route";
-import { PaymentRoutes } from "./app/module/payment/payment.route";
 
 const app: Application = express();
 
@@ -41,8 +39,7 @@ app.use("/api/auth", AuthRoutes);
 app.use("/api/user", UserRoutes);
 app.use("/api/developer", DeveloperRoutes);
 app.use("/api/career", CareerRoutes);
-app.use("/api/appointment", AppointmentRoutes);
-app.use("/api/payment", PaymentRoutes);
+app.use("/api/project", ProjectRoutes);
 
 app.get("/test", async (req: Request, res: Response, next: NextFunction) => {
 	try {

@@ -3,7 +3,7 @@ model Project {
 
     // Original request
     serviceRequestId String         @unique
-    serviceRequest   ServiceRequest @relation(fields: [serviceRequestId], references: [id])
+    serviceRequest   ProjectRequest @relation(fields: [serviceRequestId], references: [id])
 
     // Client
     clientId String

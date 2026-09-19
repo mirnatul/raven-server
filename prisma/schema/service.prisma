@@ -5,7 +5,7 @@ model Service {
     imageUrl     String?
     technologies String[]
 
-    serviceRequest ServiceRequest[]
+    projectRequest ProjectRequest[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
