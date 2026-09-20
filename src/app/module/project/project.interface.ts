@@ -11,3 +11,12 @@ export interface IProjectRequestOfferPayload {
 export interface IPaymentInitiatePayload {
 	projectRequestId: string;
 }
+
+export interface ICreateProjectPayload {
+	projectRequestId: string;
+	title: string;
+	description: string;
+	startDate?: Date;
+	deadline?: Date;
+	projectManagerId?: string;
+}

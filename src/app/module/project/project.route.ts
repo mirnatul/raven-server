@@ -4,6 +4,7 @@ import { auth } from "../../middleware/checkAuth";
 import { Role } from "../../../generated/prisma/enums";
 import { validateRequest } from "../../middleware/validateRequest";
 import {
+	createProjectValidationSchema,
 	paymentInitiateValidationSchema,
 	projectRequestOfferValidationSchema,
 	projectRequestValidationSchema,
@@ -49,5 +50,13 @@ router.post("/pay", auth(Role.CLIENT), ProjectController.pay);
 
 // called by bkash callback - automatically
 router.get("/pay-cover/payment/callback", ProjectController.payCallback);
+
+// project create
+router.post(
+	"/create-project",
+	auth(Role.ADMIN),
+	validateRequest(createProjectValidationSchema),
+	ProjectController.createProject,
+);
 
 export const ProjectRoutes = router;

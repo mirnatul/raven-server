@@ -16,7 +16,7 @@ model ProjectRequest {
     status ProjectRequestStatus @default(UNDER_REVIEW)
 
     // Proposed project information
-    proposedPrice Int
+    proposedPrice Int?
     adminMessage  String?
 
     payment Payment?

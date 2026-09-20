@@ -18,7 +18,7 @@ model Project {
 
     // Project management
     projectManagerId String?
-    projectManager   Developer? @relation(fields: [projectManagerId], references: [id])
+    projectManager   User?   @relation(fields: [projectManagerId], references: [id])
 
     status ProjectStatus @default(PLANNING)
 

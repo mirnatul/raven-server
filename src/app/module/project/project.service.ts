@@ -8,6 +8,7 @@ import { prisma } from "../../lib/prisma";
 import { RequestUser } from "../../middleware/checkAuth";
 import { AppError } from "../../utils/AppError";
 import {
+	ICreateProjectPayload,
 	IPaymentInitiatePayload,
 	IProjectRequestOfferPayload,
 	IProjectRequestPayload,
@@ -410,6 +411,57 @@ const payCallback = async (query: Record<string, any>) => {
 	return transactionResult;
 };
 
+// project create
+const createProject = async (payload: ICreateProjectPayload) => {
+	const projectRequest = await prisma.projectRequest.findUnique({
+		where: {
+			id: payload.projectRequestId,
+		},
+		include: {
+			project: true,
+		},
+	});
+
+	if (!projectRequest) {
+		throw new AppError(httpStatus.NOT_FOUND, "Project request not found");
+	}
+
+	if (projectRequest.status !== ProjectRequestStatus.PAID) {
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"Project can only be created after payment",
+		);
+	}
+
+	if (projectRequest.project) {
+		throw new AppError(httpStatus.CONFLICT, "Project has already been created");
+	}
+
+	if (!projectRequest.clientId) {
+		throw new AppError(httpStatus.BAD_REQUEST, "Project request has no client");
+	}
+
+	console.log(payload.projectManagerId);
+	const project = await prisma.project.create({
+		data: {
+			serviceRequestId: projectRequest.id,
+			clientId: projectRequest.clientId,
+
+			title: payload.title,
+			description: payload.description,
+
+			budget: projectRequest.proposedPrice!,
+
+			startDate: payload.startDate,
+			deadline: payload.deadline,
+
+			projectManagerId: payload.projectManagerId,
+		},
+	});
+
+	return project;
+};
+
 export const ProjectService = {
 	projectRequest,
 	getMyProjectRequests,
@@ -418,4 +470,5 @@ export const ProjectService = {
 	createPaymentInitiate,
 	pay,
 	payCallback,
+	createProject,
 };

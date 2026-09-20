@@ -23,8 +23,6 @@ model Developer {
     githubUrl    String?
     linkedinUrl  String?
 
-    projects Project[]
-
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 

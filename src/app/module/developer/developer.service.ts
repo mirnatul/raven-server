@@ -148,7 +148,7 @@ const hireApplicant = async (payload: IHireDeveloperPayload) => {
 				contactNumber: application.contactNumber,
 				address: application.address,
 				password: hashedPassword,
-				role: "DEVELOPER",
+				role: application.jobOpening.position,
 				needPasswordChange: true,
 			},
 		});

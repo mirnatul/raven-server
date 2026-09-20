@@ -99,6 +99,17 @@ const payCallback = catchAsync(
 	}),
 );
 
+const createProject = catchAsync(async (req: Request, res: Response) => {
+	const result = await ProjectService.createProject(req.body);
+
+	sendResponse(res, {
+		statusCode: httpStatus.CREATED,
+		success: true,
+		message: "Project created successfully",
+		data: result,
+	});
+});
+
 export const ProjectController = {
 	projectRequest,
 	getMyProjectRequests,
@@ -107,4 +118,5 @@ export const ProjectController = {
 	createPaymentInitiate,
 	pay,
 	payCallback,
+	createProject,
 };
