@@ -24,6 +24,7 @@ model Developer {
     linkedinUrl  String?
 
     availability DeveloperAvailability[]
+    task         Task[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

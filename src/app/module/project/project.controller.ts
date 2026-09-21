@@ -142,6 +142,23 @@ const getProjectMembers = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const getProjectDeveloperScheduleReport = catchAsync(
+	async (req: Request, res: Response) => {
+		const { projectId } = req.params;
+
+		const result = await ProjectService.getProjectDeveloperScheduleReport(
+			projectId as string,
+		);
+
+		sendResponse(res, {
+			statusCode: httpStatus.OK,
+			success: true,
+			message: "Project developer schedule report retrieved successfully",
+			data: result,
+		});
+	},
+);
+
 export const ProjectController = {
 	projectRequest,
 	getMyProjectRequests,
@@ -153,4 +170,5 @@ export const ProjectController = {
 	createProject,
 	assignDeveloperToProject,
 	getProjectMembers,
+	getProjectDeveloperScheduleReport,
 };

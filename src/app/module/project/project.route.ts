@@ -73,4 +73,10 @@ router.get(
 	ProjectController.getProjectMembers,
 );
 
+router.get(
+	"/:projectId/developer-schedule-report",
+	auth(Role.ADMIN, Role.PROJECT_MANAGER),
+	ProjectController.getProjectDeveloperScheduleReport,
+);
+
 export const ProjectRoutes = router;

@@ -18,6 +18,7 @@ import { getBkashIdToken } from "./app/lib/bkash";
 import { ProjectRoutes } from "./app/module/project/project.route";
 import { DeveloperRoutes } from "./app/module/developer/developer.route";
 import { CareerRoutes } from "./app/module/career/career.route";
+import { KanbanRoutes } from "./app/module/kanban/kanban.route";
 
 const app: Application = express();
 
@@ -40,6 +41,7 @@ app.use("/api/user", UserRoutes);
 app.use("/api/developer", DeveloperRoutes);
 app.use("/api/career", CareerRoutes);
 app.use("/api/project", ProjectRoutes);
+app.use("/api/kanban", KanbanRoutes);
 
 app.get("/test", async (req: Request, res: Response, next: NextFunction) => {
 	try {

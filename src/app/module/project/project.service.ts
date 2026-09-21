@@ -606,6 +606,8 @@ const getProjectMembers = async (projectId: string) => {
 		select: {
 			id: true,
 			title: true,
+
+			// Project Manager is a User
 			projectManager: {
 				select: {
 					id: true,
@@ -615,10 +617,12 @@ const getProjectMembers = async (projectId: string) => {
 					imageUrl: true,
 				},
 			},
+
 			members: {
 				select: {
 					id: true,
 					role: true,
+
 					user: {
 						select: {
 							id: true,
@@ -626,15 +630,36 @@ const getProjectMembers = async (projectId: string) => {
 							email: true,
 							role: true,
 							imageUrl: true,
+
 							developer: {
 								select: {
 									id: true,
 									title: true,
 									specialization: true,
 									employmentStatus: true,
+
+									availability: {
+										where: {
+											projectId: projectId,
+										},
+										select: {
+											id: true,
+											date: true,
+											status: true,
+										},
+										orderBy: {
+											date: "asc",
+										},
+									},
 								},
 							},
 						},
+					},
+				},
+
+				orderBy: {
+					user: {
+						name: "asc",
 					},
 				},
 			},
@@ -646,25 +671,40 @@ const getProjectMembers = async (projectId: string) => {
 	}
 
 	const developers = project.members
-		.filter((member) => member.user.role === "DEVELOPER")
-		.map((member) => ({
-			memberId: member.id,
-			userId: member.user.id,
-			developerId: member.user.developer?.id,
-			name: member.user.name,
-			email: member.user.email,
-			role: member.role,
-			title: member.user.developer?.title,
-			specialization: member.user.developer?.specialization,
-			employmentStatus: member.user.developer?.employmentStatus,
-			imageUrl: member.user.imageUrl,
-		}));
+		.filter(
+			(member) => member.user.role === "DEVELOPER" && member.user.developer,
+		)
+		.map((member) => {
+			const developer = member.user.developer!;
+
+			return {
+				memberId: member.id,
+				userId: member.user.id,
+				developerId: developer.id,
+
+				name: member.user.name,
+				email: member.user.email,
+				role: member.role,
+
+				title: developer.title,
+				specialization: developer.specialization,
+				employmentStatus: developer.employmentStatus,
+
+				imageUrl: member.user.imageUrl,
+
+				schedule: developer.availability.map((item) => ({
+					date: item.date.toISOString().split("T")[0],
+					status: item.status,
+				})),
+			};
+		});
 
 	return {
 		project: {
 			id: project.id,
 			title: project.title,
 		},
+
 		projectManager: project.projectManager
 			? {
 					id: project.projectManager.id,
@@ -674,6 +714,82 @@ const getProjectMembers = async (projectId: string) => {
 					imageUrl: project.projectManager.imageUrl,
 				}
 			: null,
+
+		developers,
+	};
+};
+
+const getProjectDeveloperScheduleReport = async (projectId: string) => {
+	const project = await prisma.project.findUnique({
+		where: {
+			id: projectId,
+		},
+		select: {
+			id: true,
+			title: true,
+
+			members: {
+				where: {
+					user: {
+						role: "DEVELOPER",
+					},
+				},
+				select: {
+					user: {
+						select: {
+							name: true,
+
+							developer: {
+								select: {
+									availability: {
+										where: {
+											projectId,
+											status: "OCCUPIED",
+										},
+										select: {
+											date: true,
+										},
+										orderBy: {
+											date: "asc",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				orderBy: {
+					user: {
+						name: "asc",
+					},
+				},
+			},
+		},
+	});
+
+	if (!project) {
+		throw new AppError(404, "Project not found");
+	}
+
+	const developers = project.members
+		.filter((member) => member.user.developer)
+		.map((member) => {
+			const availability = member.user.developer!.availability;
+
+			return {
+				name: member.user.name,
+				totalDays: availability.length,
+				dates: availability.map(
+					(item) => item.date.toISOString().split("T")[0],
+				),
+			};
+		});
+
+	return {
+		project: {
+			id: project.id,
+			title: project.title,
+		},
 		developers,
 	};
 };
@@ -689,4 +805,5 @@ export const ProjectService = {
 	createProject,
 	assignDeveloperToProject,
 	getProjectMembers,
+	getProjectDeveloperScheduleReport,
 };

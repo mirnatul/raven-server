@@ -30,7 +30,6 @@ model User {
   jobOpenings    JobOpening[]
   jobApplication JobApplication[]
   projectMembers ProjectMember[]
-  tasks          Task[]
   project        Project[]
 
   @@map("users")
