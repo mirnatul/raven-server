@@ -1,0 +1,21 @@
+model DeveloperAvailability {
+    id String @id @default(uuid())
+
+    date   DateTime
+    status DeveloperAvailabilityStatus
+
+    developerId String
+    developer   Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+
+    projectId String?
+    project   Project? @relation(fields: [projectId], references: [id])
+
+    @@unique([developerId, date])
+    @@index([developerId, date])
+    @@map("developer_availability")
+}
+
+enum DeveloperAvailabilityStatus {
+    OCCUPIED
+    LEAVE
+}

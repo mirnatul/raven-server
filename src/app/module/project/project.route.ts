@@ -4,6 +4,7 @@ import { auth } from "../../middleware/checkAuth";
 import { Role } from "../../../generated/prisma/enums";
 import { validateRequest } from "../../middleware/validateRequest";
 import {
+	assignDeveloperToProjectValidationSchema,
 	createProjectValidationSchema,
 	paymentInitiateValidationSchema,
 	projectRequestOfferValidationSchema,
@@ -57,6 +58,19 @@ router.post(
 	auth(Role.ADMIN),
 	validateRequest(createProjectValidationSchema),
 	ProjectController.createProject,
+);
+
+router.post(
+	"/assign-developer/:projectId",
+	auth(Role.PROJECT_MANAGER),
+	validateRequest(assignDeveloperToProjectValidationSchema),
+	ProjectController.assignDeveloperToProject,
+);
+
+router.get(
+	"/:projectId/members",
+	auth(Role.ADMIN, Role.PROJECT_MANAGER, Role.CLIENT),
+	ProjectController.getProjectMembers,
 );
 
 export const ProjectRoutes = router;

@@ -22,3 +22,10 @@ export const createProjectValidationSchema = z.object({
 	deadline: z.coerce.date().optional(),
 	projectManagerId: z.string().min(1, "Project manager ID is required"),
 });
+
+export const assignDeveloperToProjectValidationSchema = z.object({
+	developerId: z.string().min(1, "Developer ID is required"),
+	dates: z
+		.array(z.string().min(1, "Date is required"))
+		.min(1, "At least one date is required"),
+});

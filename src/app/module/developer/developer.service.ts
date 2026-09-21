@@ -353,9 +353,92 @@ const updateDeveloperProfile = async (
 	return updatedDeveloper;
 };
 
+const getDeveloperNext30DaysSchedule = async (developerId: string) => {
+	const developer = await prisma.developer.findUnique({
+		where: {
+			id: developerId,
+		},
+		include: {
+			user: {
+				select: {
+					id: true,
+					name: true,
+					email: true,
+				},
+			},
+		},
+	});
+
+	if (!developer) {
+		throw new AppError(404, "Developer not found");
+	}
+
+	const today = new Date();
+
+	today.setUTCHours(0, 0, 0, 0);
+
+	const endDate = new Date(today);
+	endDate.setUTCDate(endDate.getUTCDate() + 30);
+
+	const availability = await prisma.developerAvailability.findMany({
+		where: {
+			developerId,
+			date: {
+				gte: today,
+				lt: endDate,
+			},
+		},
+		include: {
+			project: {
+				select: {
+					id: true,
+					title: true,
+				},
+			},
+		},
+		orderBy: {
+			date: "asc",
+		},
+	});
+
+	const availabilityMap = new Map(
+		availability.map((item) => [item.date.toISOString().split("T")[0], item]),
+	);
+
+	const schedule = [];
+
+	for (let i = 0; i < 30; i++) {
+		const date = new Date(today);
+		date.setUTCDate(today.getUTCDate() + i);
+
+		const dateString = date.toISOString().split("T")[0];
+
+		const record = availabilityMap.get(dateString);
+
+		schedule.push({
+			date: dateString,
+			status: record?.status ?? "AVAILABLE",
+			project: record?.project ?? null,
+		});
+	}
+
+	return {
+		developer: {
+			id: developer.id,
+			userId: developer.userId,
+			name: developer.user.name,
+			email: developer.user.email,
+			title: developer.title,
+			employmentStatus: developer.employmentStatus,
+		},
+		schedule,
+	};
+};
+
 export const DeveloperServices = {
 	applyForJob,
 	hireApplicant,
 	getAllDevelopers,
 	updateDeveloperProfile,
+	getDeveloperNext30DaysSchedule,
 };

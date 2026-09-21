@@ -47,3 +47,45 @@ export const seedAdmin = async () => {
 		console.log("Error seeding admin", error);
 	}
 };
+
+export const seedProjectManager = async () => {
+	try {
+		const isProjectManagerExist = await prisma.user.findUnique({
+			where: {
+				email: config.project_manager_email,
+			},
+		});
+
+		if (isProjectManagerExist) {
+			return;
+		}
+
+		const name = config.project_manager_name;
+		const email = config.project_manager_email;
+		const password = config.project_manager_password;
+
+		const hashedPassword = await bcrypt.hash(
+			password,
+			Number(config.bcrypt_salt_rounds),
+		);
+
+		const projectManager = await prisma.user.create({
+			data: {
+				name,
+				email,
+				password: hashedPassword,
+				contactNumber: "01700000001",
+				address: "Dhaka, Bangladesh",
+				role: Role.PROJECT_MANAGER,
+				status: "ACTIVE",
+				needPasswordChange: false,
+				emailVerified: true,
+				authProvider: "CREDENTIAL",
+			},
+		});
+
+		console.log("Project Manager created", projectManager.email);
+	} catch (error) {
+		console.log("Error seeding project manager", error);
+	}
+};

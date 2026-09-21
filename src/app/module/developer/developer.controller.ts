@@ -78,9 +78,27 @@ const updateDeveloperProfile = catchAsync(
 	},
 );
 
+const getDeveloperNext30DaysSchedule = catchAsync(
+	async (req: Request, res: Response) => {
+		const { developerId } = req.params;
+
+		const result = await DeveloperServices.getDeveloperNext30DaysSchedule(
+			developerId as string,
+		);
+
+		sendResponse(res, {
+			statusCode: httpStatus.OK,
+			success: true,
+			message: "Developer schedule retrieved successfully",
+			data: result,
+		});
+	},
+);
+
 export const DeveloperController = {
 	applyForJob,
 	hireApplicant,
 	getAllDevelopers,
 	updateDeveloperProfile,
+	getDeveloperNext30DaysSchedule,
 };

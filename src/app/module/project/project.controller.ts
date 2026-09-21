@@ -110,6 +110,38 @@ const createProject = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const assignDeveloperToProject = catchAsync(
+	async (req: Request, res: Response) => {
+		const { projectId } = req.params;
+
+		const result = await ProjectService.assignDeveloperToProject(
+			projectId as string,
+			req.body,
+			req.user!,
+		);
+
+		sendResponse(res, {
+			statusCode: httpStatus.OK,
+			success: true,
+			message: "Developer assigned to project successfully",
+			data: result,
+		});
+	},
+);
+
+const getProjectMembers = catchAsync(async (req: Request, res: Response) => {
+	const { projectId } = req.params;
+
+	const result = await ProjectService.getProjectMembers(projectId as string);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Project members retrieved successfully",
+		data: result,
+	});
+});
+
 export const ProjectController = {
 	projectRequest,
 	getMyProjectRequests,
@@ -119,4 +151,6 @@ export const ProjectController = {
 	pay,
 	payCallback,
 	createProject,
+	assignDeveloperToProject,
+	getProjectMembers,
 };

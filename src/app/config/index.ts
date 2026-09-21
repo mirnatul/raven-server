@@ -20,6 +20,10 @@ export default {
 	admin_email: process.env.ADMIN_EMAIL!,
 	admin_password: process.env.ADMIN_PASSWORD!,
 
+	project_manager_name: process.env.PROJECT_MANAGER_NAME!,
+	project_manager_email: process.env.PROJECT_MANAGER_EMAIL!,
+	project_manager_password: process.env.PROJECT_MANAGER_PASSWORD!,
+
 	// REDIS
 	redis_user: process.env.REDIS_USER!,
 	redis_password: process.env.REDIS_PASSWORD!,

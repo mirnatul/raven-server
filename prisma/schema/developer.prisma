@@ -1,8 +1,8 @@
 model Developer {
-    id     String @id @default(uuid())
-    userId String @unique
+    id String @id @default(uuid())
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String @unique
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     title          String
     resume         String
@@ -22,6 +22,8 @@ model Developer {
     portfolioUrl String?
     githubUrl    String?
     linkedinUrl  String?
+
+    availability DeveloperAvailability[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

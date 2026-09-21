@@ -20,3 +20,8 @@ export interface ICreateProjectPayload {
 	deadline?: Date;
 	projectManagerId?: string;
 }
+
+export interface IAssignDeveloperToProjectPayload {
+	developerId: string;
+	dates: string[];
+}

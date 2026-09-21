@@ -38,4 +38,10 @@ router.patch(
 	DeveloperController.updateDeveloperProfile,
 );
 
+router.get(
+	"/:developerId/schedule",
+	auth(Role.PROJECT_MANAGER, Role.ADMIN),
+	DeveloperController.getDeveloperNext30DaysSchedule,
+);
+
 export const DeveloperRoutes = router;

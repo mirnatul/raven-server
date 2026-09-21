@@ -8,6 +8,7 @@ import { prisma } from "../../lib/prisma";
 import { RequestUser } from "../../middleware/checkAuth";
 import { AppError } from "../../utils/AppError";
 import {
+	IAssignDeveloperToProjectPayload,
 	ICreateProjectPayload,
 	IPaymentInitiatePayload,
 	IProjectRequestOfferPayload,
@@ -462,6 +463,221 @@ const createProject = async (payload: ICreateProjectPayload) => {
 	return project;
 };
 
+const assignDeveloperToProject = async (
+	projectId: string,
+	payload: IAssignDeveloperToProjectPayload,
+	user: RequestUser,
+) => {
+	const { developerId, dates } = payload;
+
+	if (!dates || dates.length === 0) {
+		throw new AppError(400, "At least one date is required");
+	}
+
+	// Normalize dates to UTC midnight
+	const normalizedDates = dates.map((date) => {
+		const parsedDate = new Date(date);
+
+		if (isNaN(parsedDate.getTime())) {
+			throw new AppError(400, `Invalid date: ${date}`);
+		}
+
+		return new Date(
+			Date.UTC(
+				parsedDate.getUTCFullYear(),
+				parsedDate.getUTCMonth(),
+				parsedDate.getUTCDate(),
+			),
+		);
+	});
+
+	// Remove duplicate dates
+	const uniqueDates = Array.from(
+		new Map(normalizedDates.map((date) => [date.toISOString(), date])).values(),
+	);
+
+	const result = await prisma.$transaction(async (tx) => {
+		// 1. Check project
+		const project = await tx.project.findUnique({
+			where: {
+				id: projectId,
+			},
+		});
+
+		if (!project) {
+			throw new AppError(404, "Project not found");
+		}
+
+		// 2. Make sure this PM manages this project
+		if (project.projectManagerId !== user.userId) {
+			throw new AppError(
+				403,
+				"You are not the project manager of this project",
+			);
+		}
+
+		// 3. Find developer
+		const developer = await tx.developer.findUnique({
+			where: {
+				id: developerId,
+			},
+		});
+
+		if (!developer) {
+			throw new AppError(404, "Developer not found");
+		}
+
+		// 4. Check developer employment status
+		if (developer.employmentStatus !== "ACTIVE") {
+			throw new AppError(
+				400,
+				"Developer is not currently available for project assignment",
+			);
+		}
+
+		// 5. Check if developer is already a member of this project
+		const existingMember = await tx.projectMember.findFirst({
+			where: {
+				projectId,
+				userId: developer.userId,
+			},
+		});
+
+		if (existingMember) {
+			throw new AppError(400, "Developer is already a member of this project");
+		}
+
+		// 6. Find existing availability records
+		const existingAvailability = await tx.developerAvailability.findMany({
+			where: {
+				developerId,
+				date: {
+					in: uniqueDates,
+				},
+			},
+		});
+
+		// Any existing record means the date is unavailable
+		const unavailableDates = existingAvailability.filter(
+			(item) => item.status === "OCCUPIED" || item.status === "LEAVE",
+		);
+
+		if (unavailableDates.length > 0) {
+			const unavailableDateStrings = unavailableDates.map(
+				(item) => item.date.toISOString().split("T")[0],
+			);
+
+			throw new AppError(
+				400,
+				`Developer is unavailable on: ${unavailableDateStrings.join(", ")}`,
+			);
+		}
+
+		// 7. Create project member
+		const projectMember = await tx.projectMember.create({
+			data: {
+				projectId,
+				userId: developer.userId,
+				role: "DEVELOPER",
+			},
+		});
+
+		// 8. Create availability records for selected dates
+		await tx.developerAvailability.createMany({
+			data: uniqueDates.map((date) => ({
+				developerId,
+				projectId,
+				date,
+				status: "OCCUPIED",
+			})),
+		});
+
+		return projectMember;
+	});
+
+	return result;
+};
+
+const getProjectMembers = async (projectId: string) => {
+	const project = await prisma.project.findUnique({
+		where: {
+			id: projectId,
+		},
+		select: {
+			id: true,
+			title: true,
+			projectManager: {
+				select: {
+					id: true,
+					name: true,
+					email: true,
+					role: true,
+					imageUrl: true,
+				},
+			},
+			members: {
+				select: {
+					id: true,
+					role: true,
+					user: {
+						select: {
+							id: true,
+							name: true,
+							email: true,
+							role: true,
+							imageUrl: true,
+							developer: {
+								select: {
+									id: true,
+									title: true,
+									specialization: true,
+									employmentStatus: true,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	});
+
+	if (!project) {
+		throw new AppError(404, "Project not found");
+	}
+
+	const developers = project.members
+		.filter((member) => member.user.role === "DEVELOPER")
+		.map((member) => ({
+			memberId: member.id,
+			userId: member.user.id,
+			developerId: member.user.developer?.id,
+			name: member.user.name,
+			email: member.user.email,
+			role: member.role,
+			title: member.user.developer?.title,
+			specialization: member.user.developer?.specialization,
+			employmentStatus: member.user.developer?.employmentStatus,
+			imageUrl: member.user.imageUrl,
+		}));
+
+	return {
+		project: {
+			id: project.id,
+			title: project.title,
+		},
+		projectManager: project.projectManager
+			? {
+					id: project.projectManager.id,
+					name: project.projectManager.name,
+					email: project.projectManager.email,
+					role: project.projectManager.role,
+					imageUrl: project.projectManager.imageUrl,
+				}
+			: null,
+		developers,
+	};
+};
+
 export const ProjectService = {
 	projectRequest,
 	getMyProjectRequests,
@@ -471,4 +687,6 @@ export const ProjectService = {
 	pay,
 	payCallback,
 	createProject,
+	assignDeveloperToProject,
+	getProjectMembers,
 };
