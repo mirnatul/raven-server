@@ -188,7 +188,7 @@ const hireApplicant = async (payload: IHireDeveloperPayload) => {
 		};
 	});
 
-	// Send email AFTER transaction succeeds
+	// Send hiring email after transaction succeeds
 	const templatePath = path.join(
 		process.cwd(),
 		"src/app/templates/hired-message.ejs",
@@ -196,12 +196,15 @@ const hireApplicant = async (payload: IHireDeveloperPayload) => {
 
 	const html = await ejs.renderFile(templatePath, {
 		name: result.user.name,
+		email: result.user.email,
+		temporaryPassword: result.temporaryPassword,
+		position: application.jobOpening.title,
 	});
 
 	await transporter.sendMail({
 		from: config.email_sender,
 		to: result.user.email,
-		subject: "Hiring Message",
+		subject: "Welcome to Raven — You Have Been Hired!",
 		html,
 	});
 

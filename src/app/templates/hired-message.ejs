@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -7,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Welcome to Raven</title>
 
-    ```
     <style>
         body {
             margin: 0;
@@ -56,6 +54,51 @@
             font-weight: bold;
         }
 
+        .credentials {
+            background: #f8faf9;
+            border: 1px solid #dfe9e4;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+
+        .credential-row {
+            margin-bottom: 14px;
+        }
+
+        .credential-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .label {
+            display: block;
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .value {
+            display: block;
+            background: #ffffff;
+            border: 1px solid #dfe9e4;
+            padding: 10px 12px;
+            border-radius: 6px;
+            color: #111827;
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        .warning {
+            background: #fff8e7;
+            border: 1px solid #f1dfad;
+            color: #795c16;
+            padding: 13px;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 20px 0;
+        }
+
         .footer {
             margin-top: 30px;
             padding-top: 20px;
@@ -65,14 +108,11 @@
             text-align: center;
         }
     </style>
-    ```
-
 </head>
 
 <body>
     <div class="container">
 
-        ```
         <div class="logo">
             RAVEN
         </div>
@@ -83,7 +123,10 @@
 
         <p>
             We're excited to inform you that you have been officially
-            selected to join <strong>Raven</strong> as a developer.
+            selected to join <strong>Raven</strong> as
+            <strong>
+                <%= position %>
+            </strong>.
         </p>
 
         <div class="success-box">
@@ -92,8 +135,37 @@
 
         <p>
             Your application has been successfully reviewed, and we are
-            pleased to welcome you to our development team.
+            pleased to welcome you to our team.
         </p>
+
+        <p>
+            Below are your temporary login credentials:
+        </p>
+
+        <div class="credentials">
+
+            <div class="credential-row">
+                <span class="label">Email</span>
+                <span class="value">
+                    <%= email %>
+                </span>
+            </div>
+
+            <div class="credential-row">
+                <span class="label">Temporary Password</span>
+                <span class="value">
+                    <%= temporaryPassword %>
+                </span>
+            </div>
+
+        </div>
+
+        <div class="warning">
+            <strong>Important:</strong>
+            This is a temporary password. Please log in using these
+            credentials and change your password immediately after your
+            first login.
+        </div>
 
         <p>
             We look forward to working with you, building meaningful
@@ -112,8 +184,6 @@
         </div>
 
     </div>
-    ```
-
 </body>
 
 </html>
