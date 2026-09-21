@@ -20,7 +20,7 @@ model Project {
     projectManagerId String?
     projectManager   User?   @relation(fields: [projectManagerId], references: [id])
 
-    status ProjectStatus @default(PLANNING)
+    status ProjectStatus @default(IN_PROGRESS)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -32,10 +32,9 @@ model Project {
 }
 
 enum ProjectStatus {
-    PLANNING
     IN_PROGRESS
-    CLIENT_REVIEW
     COMPLETED
+    DELIVERED
     CANCELLED
     ARCHIVED
 }

@@ -24,4 +24,16 @@ router.get(
 	KanbanController.getDeveloperTasks,
 );
 
+router.patch(
+	"/developer/:taskId/status",
+	auth(Role.DEVELOPER),
+	KanbanController.updateTaskStatusByDeveloper,
+);
+
+router.patch(
+	"/project-manager/:taskId/status",
+	auth(Role.PROJECT_MANAGER),
+	KanbanController.updateTaskStatusByProjectManager,
+);
+
 export const KanbanRoutes = router;

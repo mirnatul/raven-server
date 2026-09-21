@@ -1,4 +1,4 @@
-import { TaskPriority } from "../../../generated/prisma/enums";
+import { TaskPriority, TaskStatus } from "../../../generated/prisma/enums";
 
 export interface IAssignTaskPayload {
 	projectId: string;
@@ -7,4 +7,16 @@ export interface IAssignTaskPayload {
 	description?: string;
 	priority?: TaskPriority;
 	dueDate: string;
+}
+
+export interface IDeveloperTaskStatusPayload {
+	taskId: string;
+	developerId: string;
+	status: TaskStatus;
+}
+
+export interface IPMTaskStatusPayload {
+	taskId: string;
+	projectManagerId: string;
+	status: TaskStatus;
 }

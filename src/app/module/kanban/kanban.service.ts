@@ -1,6 +1,11 @@
+import { TaskStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { AppError } from "../../utils/AppError";
-import { IAssignTaskPayload } from "./kanban.interface";
+import {
+	IAssignTaskPayload,
+	IDeveloperTaskStatusPayload,
+	IPMTaskStatusPayload,
+} from "./kanban.interface";
 
 const assignTaskAssign = async (payload: IAssignTaskPayload) => {
 	const { projectId, developerId, title, description, priority, dueDate } =
@@ -124,8 +129,113 @@ const getDeveloperTasks = async (developerId: string) => {
 	return tasks;
 };
 
+const updateTaskStatusByDeveloper = async (
+	payload: IDeveloperTaskStatusPayload,
+) => {
+	const { taskId, developerId, status } = payload;
+
+	const task = await prisma.task.findUnique({
+		where: {
+			id: taskId,
+		},
+	});
+
+	if (!task) {
+		throw new AppError(404, "Task not found");
+	}
+
+	// Make sure this task belongs to this developer
+	if (task.assignedToId !== developerId) {
+		throw new AppError(403, "This task is not assigned to you");
+	}
+
+	const allowedTransitions: Record<TaskStatus, TaskStatus[]> = {
+		BACKLOG: ["TODO"],
+		TODO: ["IN_PROGRESS"],
+		IN_PROGRESS: ["IN_REVIEW"],
+		IN_REVIEW: [],
+		CHANGES_REQUESTED: ["IN_PROGRESS"],
+		DONE: [],
+	};
+
+	const allowedStatuses = allowedTransitions[task.status];
+
+	if (!allowedStatuses.includes(status)) {
+		throw new AppError(
+			400,
+			`Developer cannot change task from ${task.status} to ${status}`,
+		);
+	}
+
+	const updatedTask = await prisma.task.update({
+		where: {
+			id: taskId,
+		},
+		data: {
+			status,
+		},
+	});
+
+	return updatedTask;
+};
+
+const updateTaskStatusByProjectManager = async (
+	payload: IPMTaskStatusPayload,
+) => {
+	const { taskId, projectManagerId, status } = payload;
+
+	const task = await prisma.task.findUnique({
+		where: {
+			id: taskId,
+		},
+		include: {
+			project: true,
+		},
+	});
+
+	if (!task) {
+		throw new AppError(404, "Task not found");
+	}
+
+	// Make sure this PM manages this project
+	if (task.project.projectManagerId !== projectManagerId) {
+		throw new AppError(403, "You are not the project manager of this project");
+	}
+
+	const allowedTransitions: Record<TaskStatus, TaskStatus[]> = {
+		BACKLOG: [],
+		TODO: [],
+		IN_PROGRESS: [],
+		IN_REVIEW: ["CHANGES_REQUESTED", "DONE"],
+		CHANGES_REQUESTED: [],
+		DONE: [],
+	};
+
+	const allowedStatuses = allowedTransitions[task.status];
+
+	if (!allowedStatuses.includes(status)) {
+		throw new AppError(
+			400,
+			`Project manager cannot change task from ${task.status} to ${status}`,
+		);
+	}
+
+	const updatedTask = await prisma.task.update({
+		where: {
+			id: taskId,
+		},
+		data: {
+			status,
+		},
+	});
+
+	return updatedTask;
+};
+
 export const KanbanService = {
 	assignTaskAssign,
 	getProjectTasks,
 	getDeveloperTasks,
+	updateTaskStatusByDeveloper,
+	updateTaskStatusByProjectManager,
 };
