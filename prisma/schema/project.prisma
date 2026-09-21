@@ -29,6 +29,7 @@ model Project {
     members               ProjectMember[]
     tasks                 Task[]
     developerAvailability DeveloperAvailability[]
+    projectReview         ProjectReview[]
 }
 
 enum ProjectStatus {

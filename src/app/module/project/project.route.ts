@@ -79,4 +79,22 @@ router.get(
 	ProjectController.getProjectDeveloperScheduleReport,
 );
 
+router.get(
+	"/:projectId/progress",
+	auth(Role.ADMIN, Role.PROJECT_MANAGER, Role.CLIENT),
+	ProjectController.getProjectProgress,
+);
+
+router.patch(
+	"/:projectId/deliver",
+	auth(Role.PROJECT_MANAGER),
+	ProjectController.markProjectAsDelivered,
+);
+
+router.post(
+	"/:projectId/review",
+	auth(Role.CLIENT),
+	ProjectController.createProjectReview,
+);
+
 export const ProjectRoutes = router;

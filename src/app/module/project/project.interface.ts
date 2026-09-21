@@ -25,3 +25,10 @@ export interface IAssignDeveloperToProjectPayload {
 	developerId: string;
 	dates: string[];
 }
+
+export interface ICreateProjectReviewPayload {
+	projectId: string;
+	clientId: string;
+	rating: number;
+	comment?: string;
+}

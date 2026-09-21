@@ -9,6 +9,7 @@ model Client {
 
   projectRequest ProjectRequest[]
   projects       Project[]
+  projectReview  ProjectReview[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -159,6 +159,57 @@ const getProjectDeveloperScheduleReport = catchAsync(
 	},
 );
 
+const getProjectProgress = catchAsync(async (req: Request, res: Response) => {
+	const { projectId } = req.params;
+
+	const result = await ProjectService.getProjectProgress(projectId as string);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Project progress retrieved successfully",
+		data: result,
+	});
+});
+
+const markProjectAsDelivered = catchAsync(
+	async (req: Request, res: Response) => {
+		const { projectId } = req.params;
+
+		const result = await ProjectService.markProjectAsDelivered(
+			projectId as string,
+			req?.user?.userId as string,
+		);
+
+		sendResponse(res, {
+			statusCode: httpStatus.OK,
+			success: true,
+			message: "Project marked as delivered successfully",
+			data: result,
+		});
+	},
+);
+
+const createProjectReview = catchAsync(async (req: Request, res: Response) => {
+	const { projectId } = req.params;
+
+	const { rating, comment } = req.body;
+
+	const result = await ProjectService.createProjectReview({
+		projectId: projectId as string,
+		clientId: req?.user?.userId as string,
+		rating,
+		comment,
+	});
+
+	sendResponse(res, {
+		statusCode: httpStatus.CREATED,
+		success: true,
+		message: "Project review submitted successfully",
+		data: result,
+	});
+});
+
 export const ProjectController = {
 	projectRequest,
 	getMyProjectRequests,
@@ -171,4 +222,7 @@ export const ProjectController = {
 	assignDeveloperToProject,
 	getProjectMembers,
 	getProjectDeveloperScheduleReport,
+	getProjectProgress,
+	markProjectAsDelivered,
+	createProjectReview,
 };

@@ -1,6 +1,7 @@
 import {
 	PaymentStatus,
 	ProjectRequestStatus,
+	ProjectStatus,
 } from "../../../generated/prisma/enums";
 import config from "../../config";
 import { getBkashIdToken } from "../../lib/bkash";
@@ -10,6 +11,7 @@ import { AppError } from "../../utils/AppError";
 import {
 	IAssignDeveloperToProjectPayload,
 	ICreateProjectPayload,
+	ICreateProjectReviewPayload,
 	IPaymentInitiatePayload,
 	IProjectRequestOfferPayload,
 	IProjectRequestPayload,
@@ -828,6 +830,96 @@ const getProjectProgress = async (projectId: string) => {
 	};
 };
 
+const markProjectAsDelivered = async (
+	projectId: string,
+	projectManagerId: string,
+) => {
+	const project = await prisma.project.findUnique({
+		where: {
+			id: projectId,
+		},
+	});
+
+	if (!project) {
+		throw new AppError(404, "Project not found");
+	}
+
+	if (project.projectManagerId !== projectManagerId) {
+		throw new AppError(
+			403,
+			"You are not assigned as the project manager of this project",
+		);
+	}
+
+	if (project.status !== ProjectStatus.COMPLETED) {
+		throw new AppError(
+			400,
+			"Only completed projects can be marked as delivered",
+		);
+	}
+
+	const updatedProject = await prisma.project.update({
+		where: {
+			id: projectId,
+		},
+		data: {
+			status: ProjectStatus.DELIVERED,
+		},
+	});
+
+	return updatedProject;
+};
+
+const createProjectReview = async (payload: ICreateProjectReviewPayload) => {
+	const { projectId, clientId, rating, comment } = payload;
+
+	const project = await prisma.project.findUnique({
+		where: {
+			id: projectId,
+		},
+	});
+
+	if (!project) {
+		throw new AppError(404, "Project not found");
+	}
+
+	// Check project belongs to this client
+	if (project.clientId !== clientId) {
+		throw new AppError(403, "You are not the client of this project");
+	}
+
+	// Client can review only after delivery
+	if (project.status !== ProjectStatus.DELIVERED) {
+		throw new AppError(400, "Only delivered projects can be reviewed");
+	}
+
+	// Check if already reviewed
+	const existingReview = await prisma.projectReview.findUnique({
+		where: {
+			projectId,
+		},
+	});
+
+	if (existingReview) {
+		throw new AppError(400, "This project has already been reviewed");
+	}
+
+	if (rating < 1 || rating > 5) {
+		throw new AppError(400, "Rating must be between 1 and 5");
+	}
+
+	const review = await prisma.projectReview.create({
+		data: {
+			projectId,
+			clientId,
+			rating,
+			comment,
+		},
+	});
+
+	return review;
+};
+
 export const ProjectService = {
 	projectRequest,
 	getMyProjectRequests,
@@ -840,4 +932,7 @@ export const ProjectService = {
 	assignDeveloperToProject,
 	getProjectMembers,
 	getProjectDeveloperScheduleReport,
+	getProjectProgress,
+	markProjectAsDelivered,
+	createProjectReview,
 };
