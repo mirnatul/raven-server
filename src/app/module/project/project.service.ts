@@ -794,6 +794,40 @@ const getProjectDeveloperScheduleReport = async (projectId: string) => {
 	};
 };
 
+const getProjectProgress = async (projectId: string) => {
+	const project = await prisma.project.findUnique({
+		where: {
+			id: projectId,
+		},
+		include: {
+			tasks: {
+				select: {
+					status: true,
+				},
+			},
+		},
+	});
+
+	if (!project) {
+		throw new AppError(404, "Project not found");
+	}
+
+	const totalTasks = project.tasks.length;
+
+	const completedTasks = project.tasks.filter(
+		(task) => task.status === "DONE",
+	).length;
+
+	const progress =
+		totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+
+	return {
+		totalTasks,
+		completedTasks,
+		progress,
+	};
+};
+
 export const ProjectService = {
 	projectRequest,
 	getMyProjectRequests,

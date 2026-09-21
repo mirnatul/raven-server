@@ -220,6 +220,7 @@ const updateTaskStatusByProjectManager = async (
 		);
 	}
 
+	// Update task
 	const updatedTask = await prisma.task.update({
 		where: {
 			id: taskId,
@@ -228,6 +229,34 @@ const updateTaskStatusByProjectManager = async (
 			status,
 		},
 	});
+
+	// Get all tasks of this project
+	const projectTasks = await prisma.task.findMany({
+		where: {
+			projectId: task.projectId,
+		},
+		select: {
+			status: true,
+		},
+	});
+
+	const totalTasks = projectTasks.length;
+
+	const completedTasks = projectTasks.filter(
+		(task) => task.status === TaskStatus.DONE,
+	).length;
+
+	// If all tasks are DONE, complete the project
+	if (totalTasks > 0 && completedTasks === totalTasks) {
+		await prisma.project.update({
+			where: {
+				id: task.projectId,
+			},
+			data: {
+				status: "COMPLETED",
+			},
+		});
+	}
 
 	return updatedTask;
 };
