@@ -48,6 +48,18 @@ const hireApplicant = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const rejectApplicant = catchAsync(async (req: Request, res: Response) => {
+	const { applicationId } = req.body;
+	const result = await DeveloperServices.rejectApplicant(applicationId);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Rejected Successfully",
+		data: result,
+	});
+});
+
 const getAllDevelopers = catchAsync(async (req: Request, res: Response) => {
 	const { data, meta } = await DeveloperServices.getAllDevelopers(req.query);
 
@@ -98,6 +110,7 @@ const getDeveloperNext30DaysSchedule = catchAsync(
 export const DeveloperController = {
 	applyForJob,
 	hireApplicant,
+	rejectApplicant,
 	getAllDevelopers,
 	updateDeveloperProfile,
 	getDeveloperNext30DaysSchedule,

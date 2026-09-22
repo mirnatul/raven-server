@@ -45,4 +45,5 @@ model JobApplication {
 enum JobApplicationStatus {
     UNDER_REVIEW
     HIRED
+    REJECTED
 }

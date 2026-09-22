@@ -22,7 +22,7 @@ const main = async () => {
 
 		await seedAdmin();
 		await seedServices();
-		await seedProjectManager();
+		// await seedProjectManager();
 
 		// corn job
 		// await deleteUnverifiedDevelopers();

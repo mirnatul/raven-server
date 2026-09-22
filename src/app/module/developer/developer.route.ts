@@ -6,6 +6,7 @@ import { validateRequest } from "../../middleware/validateRequest";
 import {
 	ApplyForJobValidationZodSchema,
 	HireDeveloperValidationZodSchema,
+	RejectDeveloperValidationZodSchema,
 	UpdateDeveloperProfileValidationSchema,
 } from "./developer.validation";
 import { upload } from "../../lib/multer";
@@ -23,6 +24,13 @@ router.post(
 	auth(Role.ADMIN),
 	validateRequest(HireDeveloperValidationZodSchema),
 	DeveloperController.hireApplicant,
+);
+
+router.post(
+	"/rejected",
+	auth(Role.ADMIN),
+	validateRequest(RejectDeveloperValidationZodSchema),
+	DeveloperController.rejectApplicant,
 );
 
 router.get(

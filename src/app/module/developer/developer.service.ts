@@ -132,7 +132,7 @@ const hireApplicant = async (payload: IHireDeveloperPayload) => {
 		throw new AppError(400, "Applicant is already hired");
 	}
 
-	const randomDeveloperPassword = Math.random().toString(36).slice(-8);
+	const randomDeveloperPassword = Math.random().toString(36).slice(-7) + "A@a1";
 
 	const hashedPassword = await bcrypt.hash(
 		randomDeveloperPassword,
@@ -209,6 +209,57 @@ const hireApplicant = async (payload: IHireDeveloperPayload) => {
 	});
 
 	return result;
+};
+
+const rejectApplicant = async (applicationId: string) => {
+	const application = await prisma.jobApplication.findUnique({
+		where: {
+			id: applicationId,
+		},
+		include: {
+			jobOpening: true,
+		},
+	});
+
+	if (!application) {
+		throw new AppError(404, "Job application not found");
+	}
+
+	if (application.status === JobApplicationStatus.HIRED) {
+		throw new AppError(
+			400,
+			"Cannot reject an applicant who has already been hired",
+		);
+	}
+
+	const updatedApplication = await prisma.jobApplication.update({
+		where: {
+			id: applicationId,
+		},
+		data: {
+			status: JobApplicationStatus.REJECTED,
+		},
+	});
+
+	// Send rejection email
+	const templatePath = path.join(
+		process.cwd(),
+		"src/app/templates/rejected-message.ejs",
+	);
+
+	const html = await ejs.renderFile(templatePath, {
+		name: application.name,
+		position: application.jobOpening.title,
+	});
+
+	await transporter.sendMail({
+		from: config.email_sender,
+		to: application.email,
+		subject: "Update on Your Raven Job Application",
+		html,
+	});
+
+	return updatedApplication;
 };
 
 const getAllDevelopers = async (query: IQuery) => {
@@ -324,7 +375,6 @@ const updateDeveloperProfile = async (
 			userId,
 		},
 		data: {
-			title: payload.title,
 			bio: payload.bio,
 			experienceYears: payload.experienceYears,
 			specialization: payload.specialization,
@@ -441,6 +491,7 @@ const getDeveloperNext30DaysSchedule = async (developerId: string) => {
 export const DeveloperServices = {
 	applyForJob,
 	hireApplicant,
+	rejectApplicant,
 	getAllDevelopers,
 	updateDeveloperProfile,
 	getDeveloperNext30DaysSchedule,
