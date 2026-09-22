@@ -248,7 +248,6 @@ const getMe = async (user: IRequestUser) => {
 		include: {
 			client: true,
 			developer: true,
-			projectManager: true,
 		},
 		omit: {
 			password: true,
