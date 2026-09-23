@@ -2,25 +2,41 @@
 
 **Base URL:** `https://raven-server-three.vercel.app`
 
----
-
-## Auth
-
-### GET `/api/auth/me`
-
-**Name:** Get Me (Log In)
-**Status:** ✅
-
-Returns the currently authenticated user's information.
+Raven is a project management and software development platform with authentication, career management, developer management, project management, payments, and Kanban task management.
 
 ---
 
-### POST `/api/auth/login`
+## Table of Contents
 
-**Name:** Login
-**Status:** ✅
+* [Authentication](#authentication)
+* [User](#user)
+* [Career](#career)
+* [Developer](#developer)
+* [Project](#project)
+* [Payment](#payment)
+* [Kanban](#kanban)
+* [Root](#root)
+* [API Summary](#api-summary)
 
-#### Request Body
+---
+
+# Authentication
+
+## Get Current User
+
+**GET** `/api/auth/me`
+
+Returns information about the currently authenticated user.
+
+---
+
+## Login
+
+**POST** `/api/auth/login`
+
+Authenticates a user and creates an authenticated session.
+
+### Request Body
 
 ```json
 {
@@ -29,61 +45,15 @@ Returns the currently authenticated user's information.
 }
 ```
 
-#### Test Accounts
-
-**Admin**
-
-```json
-{
-  "email": "admin@gmail.com",
-  "password": "Admin@12345"
-}
-```
-
-**Project Manager**
-
-```json
-{
-  "email": "tanvir.hasan@example.com",
-  "password": "r3i5y89A@a1"
-}
-```
-
-**DevOps Developer**
-
-```json
-{
-  "email": "rafiul.islam@example.com",
-  "password": "811pvcoA@a1"
-}
-```
-
-**QA Developer**
-
-```json
-{
-  "email": "maliha.chowdhury@example.com",
-  "password": "zuktp62A@a1"
-}
-```
-
-**Frontend Developer**
-
-```json
-{
-  "email": "nusrat.jahan@example.com",
-  "password": "1lip2zdA@a1"
-}
-```
-
 ---
 
-### POST `/api/auth/register`
+## Register Client
 
-**Name:** Register Client
-**Status:** ✅
+**POST** `/api/auth/register`
 
-#### Request Body
+Creates a new client account.
+
+### Request Body
 
 ```json
 {
@@ -99,12 +69,13 @@ Returns the currently authenticated user's information.
 
 ---
 
-### POST `/api/auth/verify-email`
+## Verify Email
 
-**Name:** Verify Email
-**Status:** ✅
+**POST** `/api/auth/verify-email`
 
-#### Request Body
+Verifies a client's email address using an OTP.
+
+### Request Body
 
 ```json
 {
@@ -115,12 +86,13 @@ Returns the currently authenticated user's information.
 
 ---
 
-### POST `/api/auth/forgot-password`
+## Forgot Password
 
-**Name:** Forgot Password
-**Status:** ✅
+**POST** `/api/auth/forgot-password`
 
-#### Request Body
+Initiates the password recovery process by sending an OTP to the user's email.
+
+### Request Body
 
 ```json
 {
@@ -130,12 +102,13 @@ Returns the currently authenticated user's information.
 
 ---
 
-### POST `/api/auth/reset-password`
+## Reset Password
 
-**Name:** Reset Password
-**Status:** ✅
+**POST** `/api/auth/reset-password`
 
-#### Request Body
+Resets the user's password using the OTP received through email.
+
+### Request Body
 
 ```json
 {
@@ -147,12 +120,13 @@ Returns the currently authenticated user's information.
 
 ---
 
-### POST `/api/auth/google`
+## Google Login
 
-**Name:** Google Login
-**Status:** ✅
+**POST** `/api/auth/google`
 
-#### Request Body
+Authenticates a user using a Google ID token.
+
+### Request Body
 
 ```json
 {
@@ -164,25 +138,29 @@ Returns the currently authenticated user's information.
 
 # User
 
-## PATCH `/api/user/profile-image`
+## Update Profile Image
 
-**Name:** Update Profile Image
-**Status:** ✅
+**PATCH** `/api/user/profile-image`
 
-**Body:** `form-data`
+Updates the authenticated user's profile image.
 
-| Key            | Type | Value         |
-| -------------- | ---- | ------------- |
-| `profileImage` | File | Profile image |
+### Request
+
+**Content-Type:** `multipart/form-data`
+
+| Field          | Type | Description       |
+| -------------- | ---- | ----------------- |
+| `profileImage` | File | New profile image |
 
 ---
 
-## PATCH `/api/user/profile`
+## Update My Profile
 
-**Name:** Update My Profile
-**Status:** ✅
+**PATCH** `/api/user/profile`
 
-#### Request Body
+Updates the authenticated user's profile information.
+
+### Request Body
 
 ```json
 {
@@ -196,13 +174,15 @@ Returns the currently authenticated user's information.
 
 # Career
 
-## POST `/api/career/job-opening`
+## Create Job Opening
 
-**Name:** Create Job Opening
-**Role:** Admin
-**Status:** ✅
+**POST** `/api/career/job-opening`
 
-#### Request Body
+**Access:** Admin
+
+Creates a new job opening.
+
+### Request Body
 
 ```json
 {
@@ -237,20 +217,24 @@ Returns the currently authenticated user's information.
 
 # Developer
 
-## POST `/api/developer/apply-for-job`
+## Apply for Job
 
-**Name:** Job Apply
+**POST** `/api/developer/apply-for-job`
+
 **Access:** Public
-**Status:** ✅
 
-**Body:** `form-data`
+Allows applicants to submit a job application with their resume and application information.
 
-| Key      | Type | Description             |
+### Request
+
+**Content-Type:** `multipart/form-data`
+
+| Field    | Type | Description             |
 | -------- | ---- | ----------------------- |
-| `resume` | File | Applicant resume        |
+| `resume` | File | Applicant's resume      |
 | `data`   | JSON | Application information |
 
-#### `data`
+### `data`
 
 ```json
 {
@@ -270,13 +254,15 @@ Returns the currently authenticated user's information.
 
 ---
 
-## POST `/api/developer/hired`
+## Hire Applicant
 
-**Name:** Hire Applicant
-**Role:** Admin
-**Status:** ✅
+**POST** `/api/developer/hired`
 
-#### Request Body
+**Access:** Admin
+
+Hires a job applicant and creates the corresponding developer account/profile.
+
+### Request Body
 
 ```json
 {
@@ -286,13 +272,15 @@ Returns the currently authenticated user's information.
 
 ---
 
-## POST `/api/developer/rejected`
+## Reject Applicant
 
-**Name:** Reject Applicant
-**Role:** Admin
-**Status:** ✅
+**POST** `/api/developer/rejected`
 
-#### Request Body
+**Access:** Admin
+
+Rejects a job application.
+
+### Request Body
 
 ```json
 {
@@ -302,33 +290,39 @@ Returns the currently authenticated user's information.
 
 ---
 
-## GET `/api/developer/:developerId/schedule`
+## Get Developer Schedule
 
-**Name:** Developer Next 30-Day Availability
+**GET** `/api/developer/:developerId/schedule`
 
-#### Example
+Returns the developer's availability for the next 30 days.
 
-```text
+### Example
+
+```http
 GET /api/developer/04435a57-aefb-4bbf-9b67-4556ed0fd1e7/schedule
 ```
 
 ---
 
-## GET `/api/developer/all-developers`
+## Get All Developers
 
-**Name:** Get All Developers
-**Access:** Admin & Project Manager
-**Status:** ✅
+**GET** `/api/developer/all-developers`
+
+**Access:** Admin, Project Manager
+
+Returns all developers available in the organization.
 
 ---
 
-## PATCH `/api/developer/developer-profile`
+## Update Developer Profile
 
-**Name:** Update Developer Profile
-**Access:** Developer & Project Manager
-**Status:** ✅
+**PATCH** `/api/developer/developer-profile`
 
-#### Request Body
+**Access:** Developer, Project Manager
+
+Updates developer profile information.
+
+### Request Body
 
 ```json
 {
@@ -346,19 +340,21 @@ GET /api/developer/04435a57-aefb-4bbf-9b67-4556ed0fd1e7/schedule
 
 # Project
 
-## GET `/api/project/all-services`
+## Get All Services
 
-**Name:** Get All Services
-**Status:** ✅
+**GET** `/api/project/all-services`
+
+Returns all services offered by Raven.
 
 ---
 
-## POST `/api/project/project-request`
+## Create Project Request
 
-**Name:** Create Project Request
-**Status:** ✅
+**POST** `/api/project/project-request`
 
-#### Request Body
+Creates a new project request for a selected service.
+
+### Request Body
 
 ```json
 {
@@ -369,34 +365,39 @@ GET /api/developer/04435a57-aefb-4bbf-9b67-4556ed0fd1e7/schedule
 
 ---
 
-## GET `/api/project/my-requests`
+## Get My Project Requests
 
-**Name:** Get My Project Requests
-**Status:** ✅
+**GET** `/api/project/my-requests`
 
----
-
-## GET `/api/project/all-project-request`
-
-**Name:** Get All Project Requests
-**Role:** Admin
-**Status:** ✅
+Returns project requests created by the authenticated client.
 
 ---
 
-## PATCH `/api/project/offer-price/:projectRequestId`
+## Get All Project Requests
 
-**Name:** Offer Project Price
-**Role:** Admin
-**Status:** ✅
+**GET** `/api/project/all-project-request`
 
-#### Example
+**Access:** Admin
 
-```text
+Returns all project requests submitted by clients.
+
+---
+
+## Offer Project Price
+
+**PATCH** `/api/project/offer-price/:projectRequestId`
+
+**Access:** Admin
+
+Allows the admin to review a project request and send a proposed project price to the client.
+
+### Example
+
+```http
 PATCH /api/project/offer-price/73747fd0-e6f5-4e66-959f-c506f579e82d
 ```
 
-#### Request Body
+### Request Body
 
 ```json
 {
@@ -407,12 +408,13 @@ PATCH /api/project/offer-price/73747fd0-e6f5-4e66-959f-c506f579e82d
 
 ---
 
-## POST `/api/project/create-project`
+## Create Project
 
-**Name:** Create Project
-**Status:** ✅
+**POST** `/api/project/create-project`
 
-#### Request Body
+Creates a project from an approved project request.
+
+### Request Body
 
 ```json
 {
@@ -427,18 +429,19 @@ PATCH /api/project/offer-price/73747fd0-e6f5-4e66-959f-c506f579e82d
 
 ---
 
-## POST `/api/project/assign-developer/:projectId`
+## Assign Developer
 
-**Name:** Assign Developer
-**Status:** ✅
+**POST** `/api/project/assign-developer/:projectId`
 
-#### Example
+Assigns a developer to a project for specific working dates.
 
-```text
+### Example
+
+```http
 POST /api/project/assign-developer/518ada36-c3c1-477a-a367-557bc6ed42cb
 ```
 
-#### Request Body
+### Request Body
 
 ```json
 {
@@ -453,44 +456,51 @@ POST /api/project/assign-developer/518ada36-c3c1-477a-a367-557bc6ed42cb
 
 ---
 
-## GET `/api/project/:projectId/members`
+## Get Project Members
 
-**Name:** Get Project Members
+**GET** `/api/project/:projectId/members`
 
-#### Example
+Returns the project manager and developers assigned to the project.
 
-```text
+### Example
+
+```http
 GET /api/project/518ada36-c3c1-477a-a367-557bc6ed42cb/members
 ```
 
 ---
 
-## GET `/api/project/:projectId/developer-schedule-report`
+## Get Developer Schedule Report
 
-**Name:** Developer Schedule Report
+**GET** `/api/project/:projectId/developer-schedule-report`
 
-#### Example
+Returns the developer scheduling information associated with a project.
 
-```text
+### Example
+
+```http
 GET /api/project/518ada36-c3c1-477a-a367-557bc6ed42cb/developer-schedule-report
 ```
 
 ---
 
-## GET `/api/project/:projectId/progress`
+## Get Project Progress
 
-**Name:** Get Project Progress
+**GET** `/api/project/:projectId/progress`
+
+Returns the current progress of a project.
 
 ---
 
 # Payment
 
-## POST `/api/project/payment-initiate`
+## Initiate Payment
 
-**Name:** Payment Initiate
-**Status:** ✅
+**POST** `/api/project/payment-initiate`
 
-#### Request Body
+Initiates payment for an approved project request.
+
+### Request Body
 
 ```json
 {
@@ -500,11 +510,13 @@ GET /api/project/518ada36-c3c1-477a-a367-557bc6ed42cb/developer-schedule-report
 
 ---
 
-## POST `/api/project/payment-initiate`
+## Pay
 
-**Name:** Pay
+**POST** `/api/project/payment-initiate`
 
-#### Request Body
+Processes payment using the project request information.
+
+### Request Body
 
 ```json
 {
@@ -512,48 +524,55 @@ GET /api/project/518ada36-c3c1-477a-a367-557bc6ed42cb/developer-schedule-report
 }
 ```
 
-> **Note:** Both `Payment Initiate` and `Pay` currently use the same endpoint. If they are intended to represent different operations, the endpoint or request name should be updated accordingly.
+> **Note:** The current Postman collection uses the same endpoint for both `Initiate Payment` and `Pay`. Update the documentation if the payment flow is separated into different endpoints.
 
 ---
 
 # Kanban
 
-## POST `/api/kanban/assign-task`
+## Assign Task
 
-**Name:** Assign Task
+**POST** `/api/kanban/assign-task`
 
----
-
-## GET `/api/kanban/all-task`
-
-**Name:** Get All Tasks
+Assigns a task to a developer within a project.
 
 ---
 
-## GET `/api/kanban/developer-task/:developerId`
+## Get All Tasks
 
-**Name:** Get Developer Tasks
+**GET** `/api/kanban/all-task`
 
-#### Example
+Returns all tasks available to the authenticated user according to their access level.
 
-```text
+---
+
+## Get Developer Tasks
+
+**GET** `/api/kanban/developer-task/:developerId`
+
+Returns tasks assigned to a specific developer.
+
+### Example
+
+```http
 GET /api/kanban/developer-task/04435a57-aefb-4bbf-9b67-4556ed0fd1e7
 ```
 
 ---
 
-## PATCH `/api/kanban/developer/:taskId/status`
+## Update Task Status — Developer
 
-**Name:** Update Task Status — Developer
-**Status:** ✅
+**PATCH** `/api/kanban/developer/:taskId/status`
 
-#### Example
+Allows a developer to update the status of an assigned task.
 
-```text
+### Example
+
+```http
 PATCH /api/kanban/developer/156d5b22-2b37-41ab-9e61-28ad2a6ca8ec/status
 ```
 
-#### Request Body
+### Request Body
 
 ```json
 {
@@ -563,13 +582,15 @@ PATCH /api/kanban/developer/156d5b22-2b37-41ab-9e61-28ad2a6ca8ec/status
 
 ---
 
-## PATCH `/api/kanban/project-manager/:taskId/status`
+## Update Task Status — Project Manager
 
-**Name:** Update Task Status — Project Manager
+**PATCH** `/api/kanban/project-manager/:taskId/status`
 
-#### Example
+Allows a project manager to review and update the status of a task.
 
-```text
+### Example
+
+```http
 PATCH /api/kanban/project-manager/156d5b22-2b37-41ab-9e61-28ad2a6ca8ec/status
 ```
 
@@ -577,11 +598,15 @@ PATCH /api/kanban/project-manager/156d5b22-2b37-41ab-9e61-28ad2a6ca8ec/status
 
 # Root
 
-## GET `/`
+## Health Check
 
-**Name:** Root
+**GET** `/`
 
-```text
+Returns the root response of the Raven API.
+
+### Example
+
+```http
 GET https://raven-server-three.vercel.app/
 ```
 
@@ -589,57 +614,68 @@ GET https://raven-server-three.vercel.app/
 
 # API Summary
 
-| Module    | Method | Endpoint                                            | Status |
-| --------- | ------ | --------------------------------------------------- | ------ |
-| Auth      | GET    | `/api/auth/me`                                      | ✅      |
-| Auth      | POST   | `/api/auth/login`                                   | ✅      |
-| Auth      | POST   | `/api/auth/register`                                | ✅      |
-| Auth      | POST   | `/api/auth/verify-email`                            | ✅      |
-| Auth      | POST   | `/api/auth/forgot-password`                         | ✅      |
-| Auth      | POST   | `/api/auth/reset-password`                          | ✅      |
-| Auth      | POST   | `/api/auth/google`                                  | ✅      |
-| User      | PATCH  | `/api/user/profile-image`                           | ✅      |
-| User      | PATCH  | `/api/user/profile`                                 | ✅      |
-| Career    | POST   | `/api/career/job-opening`                           | ✅      |
-| Developer | POST   | `/api/developer/apply-for-job`                      | ✅      |
-| Developer | POST   | `/api/developer/hired`                              | ✅      |
-| Developer | POST   | `/api/developer/rejected`                           | ✅      |
-| Developer | GET    | `/api/developer/:developerId/schedule`              | —      |
-| Developer | GET    | `/api/developer/all-developers`                     | ✅      |
-| Developer | PATCH  | `/api/developer/developer-profile`                  | ✅      |
-| Project   | GET    | `/api/project/all-services`                         | ✅      |
-| Project   | POST   | `/api/project/project-request`                      | ✅      |
-| Project   | GET    | `/api/project/my-requests`                          | ✅      |
-| Project   | GET    | `/api/project/all-project-request`                  | ✅      |
-| Project   | PATCH  | `/api/project/offer-price/:projectRequestId`        | ✅      |
-| Project   | POST   | `/api/project/create-project`                       | —      |
-| Project   | POST   | `/api/project/assign-developer/:projectId`          | —      |
-| Project   | GET    | `/api/project/:projectId/members`                   | —      |
-| Project   | GET    | `/api/project/:projectId/developer-schedule-report` | —      |
-| Project   | GET    | `/api/project/:projectId/progress`                  | —      |
-| Payment   | POST   | `/api/project/payment-initiate`                     | ✅      |
-| Kanban    | POST   | `/api/kanban/assign-task`                           | —      |
-| Kanban    | GET    | `/api/kanban/all-task`                              | —      |
-| Kanban    | GET    | `/api/kanban/developer-task/:developerId`           | —      |
-| Kanban    | PATCH  | `/api/kanban/developer/:taskId/status`              | ✅      |
-| Kanban    | PATCH  | `/api/kanban/project-manager/:taskId/status`        | —      |
-| Root      | GET    | `/`                                                 | —      |
+| Module         | Method | Endpoint                                            |
+| -------------- | ------ | --------------------------------------------------- |
+| Authentication | GET    | `/api/auth/me`                                      |
+| Authentication | POST   | `/api/auth/login`                                   |
+| Authentication | POST   | `/api/auth/register`                                |
+| Authentication | POST   | `/api/auth/verify-email`                            |
+| Authentication | POST   | `/api/auth/forgot-password`                         |
+| Authentication | POST   | `/api/auth/reset-password`                          |
+| Authentication | POST   | `/api/auth/google`                                  |
+| User           | PATCH  | `/api/user/profile-image`                           |
+| User           | PATCH  | `/api/user/profile`                                 |
+| Career         | POST   | `/api/career/job-opening`                           |
+| Developer      | POST   | `/api/developer/apply-for-job`                      |
+| Developer      | POST   | `/api/developer/hired`                              |
+| Developer      | POST   | `/api/developer/rejected`                           |
+| Developer      | GET    | `/api/developer/:developerId/schedule`              |
+| Developer      | GET    | `/api/developer/all-developers`                     |
+| Developer      | PATCH  | `/api/developer/developer-profile`                  |
+| Project        | GET    | `/api/project/all-services`                         |
+| Project        | POST   | `/api/project/project-request`                      |
+| Project        | GET    | `/api/project/my-requests`                          |
+| Project        | GET    | `/api/project/all-project-request`                  |
+| Project        | PATCH  | `/api/project/offer-price/:projectRequestId`        |
+| Project        | POST   | `/api/project/create-project`                       |
+| Project        | POST   | `/api/project/assign-developer/:projectId`          |
+| Project        | GET    | `/api/project/:projectId/members`                   |
+| Project        | GET    | `/api/project/:projectId/developer-schedule-report` |
+| Project        | GET    | `/api/project/:projectId/progress`                  |
+| Payment        | POST   | `/api/project/payment-initiate`                     |
+| Kanban         | POST   | `/api/kanban/assign-task`                           |
+| Kanban         | GET    | `/api/kanban/all-task`                              |
+| Kanban         | GET    | `/api/kanban/developer-task/:developerId`           |
+| Kanban         | PATCH  | `/api/kanban/developer/:taskId/status`              |
+| Kanban         | PATCH  | `/api/kanban/project-manager/:taskId/status`        |
+| Root           | GET    | `/`                                                 |
 
 ---
 
-## Base URL
+# Authentication & Roles
 
-```text
-https://raven-server-three.vercel.app
-```
+Raven uses role-based access control for protected resources.
 
-## Authentication
-
-Protected endpoints require authentication using the authentication mechanism configured by the Raven API.
-
-**Primary roles:**
+### Available Roles
 
 * `ADMIN`
 * `CLIENT`
 * `PROJECT_MANAGER`
 * `DEVELOPER`
+
+### Access Levels
+
+| Role                | Main Responsibilities                                                                                |
+| ------------------- | ---------------------------------------------------------------------------------------------------- |
+| **ADMIN**           | Manage users, job openings, applications, project requests, pricing, and overall platform operations |
+| **CLIENT**          | Register, manage profile, request projects, review project offers, and make payments                 |
+| **PROJECT_MANAGER** | Manage projects, assign developers, manage schedules, and review tasks                               |
+| **DEVELOPER**       | Manage developer profile, view assigned tasks, manage task progress, and work on assigned projects   |
+
+---
+
+# Base URL
+
+```text
+https://raven-server-three.vercel.app
+```
