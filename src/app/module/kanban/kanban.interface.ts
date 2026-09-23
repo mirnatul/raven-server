@@ -11,12 +11,12 @@ export interface IAssignTaskPayload {
 
 export interface IDeveloperTaskStatusPayload {
 	taskId: string;
-	developerId: string;
+	userId: string;
 	status: TaskStatus;
 }
 
 export interface IPMTaskStatusPayload {
 	taskId: string;
-	projectManagerId: string;
+	userId: string;
 	status: TaskStatus;
 }

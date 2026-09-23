@@ -13,6 +13,8 @@ import {
 
 const router = Router();
 
+router.get("/all-services", ProjectController.getAllService);
+
 // Tips: first auth then zob
 router.post(
 	"/project-request",

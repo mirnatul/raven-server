@@ -41,7 +41,7 @@ router.get(
 
 router.patch(
 	"/developer-profile",
-	auth(Role.ADMIN, Role.DEVELOPER, Role.PROJECT_MANAGER),
+	auth(Role.DEVELOPER, Role.PROJECT_MANAGER),
 	validateRequest(UpdateDeveloperProfileValidationSchema),
 	DeveloperController.updateDeveloperProfile,
 );

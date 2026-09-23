@@ -132,7 +132,7 @@ const getDeveloperTasks = async (developerId: string) => {
 const updateTaskStatusByDeveloper = async (
 	payload: IDeveloperTaskStatusPayload,
 ) => {
-	const { taskId, developerId, status } = payload;
+	const { taskId, userId, status } = payload;
 
 	const task = await prisma.task.findUnique({
 		where: {
@@ -144,8 +144,12 @@ const updateTaskStatusByDeveloper = async (
 		throw new AppError(404, "Task not found");
 	}
 
+	const developer = await prisma.developer.findUnique({
+		where: { userId },
+	});
+
 	// Make sure this task belongs to this developer
-	if (task.assignedToId !== developerId) {
+	if (task.assignedToId !== developer?.id) {
 		throw new AppError(403, "This task is not assigned to you");
 	}
 
@@ -182,7 +186,7 @@ const updateTaskStatusByDeveloper = async (
 const updateTaskStatusByProjectManager = async (
 	payload: IPMTaskStatusPayload,
 ) => {
-	const { taskId, projectManagerId, status } = payload;
+	const { taskId, userId, status } = payload;
 
 	const task = await prisma.task.findUnique({
 		where: {
@@ -198,7 +202,7 @@ const updateTaskStatusByProjectManager = async (
 	}
 
 	// Make sure this PM manages this project
-	if (task.project.projectManagerId !== projectManagerId) {
+	if (task.project.projectManagerId !== userId) {
 		throw new AppError(403, "You are not the project manager of this project");
 	}
 

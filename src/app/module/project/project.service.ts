@@ -18,6 +18,16 @@ import {
 } from "./project.interface";
 import httpStatus from "http-status";
 
+const getAllService = async () => {
+	const services = await prisma.service.findMany({
+		orderBy: {
+			createdAt: "desc",
+		},
+	});
+
+	return services;
+};
+
 const projectRequest = async (
 	payload: IProjectRequestPayload,
 	user: RequestUser,
@@ -261,7 +271,9 @@ const pay = async (payload: IPaymentInitiatePayload, user: RequestUser) => {
 	if (!existingProjectRequest) {
 		throw new AppError(httpStatus.NOT_FOUND, "Appointment not found");
 	}
-	if (existingProjectRequest.status !== ProjectRequestStatus.UNDER_REVIEW) {
+	if (
+		existingProjectRequest.status !== ProjectRequestStatus.OFFER_PROJECT_PRICE
+	) {
 		throw new AppError(
 			httpStatus.CONFLICT,
 			`Project is ${existingProjectRequest.status}`,
@@ -353,7 +365,43 @@ const payCallback = async (query: Record<string, any>) => {
 			},
 		);
 
-		const executedPaymentResult = await executedPaymentResponse.json();
+		// test
+		console.log("========== BKASH EXECUTE ==========");
+
+		console.log("Payment ID:", paymentId);
+
+		console.log("Response status:", executedPaymentResponse.status);
+
+		console.log(
+			"Response content-type:",
+			executedPaymentResponse.headers.get("content-type"),
+		);
+
+		const responseText = await executedPaymentResponse.text();
+
+		// console.log("Raw bKash response:");
+		// console.log(responseText);
+
+		let executedPaymentResult: any;
+
+		try {
+			executedPaymentResult = JSON.parse(responseText);
+		} catch (error) {
+			console.error("JSON PARSE FAILED");
+			console.error("Raw response:", responseText);
+
+			throw new AppError(
+				httpStatus.BAD_GATEWAY,
+				"Invalid response received from bKash execute API",
+			);
+		}
+
+		// console.log("Parsed bKash response:");
+		// console.log(executedPaymentResult);
+
+		// console.log("==================================");
+
+		// const executedPaymentResult = await executedPaymentResponse.json();
 
 		if (status === "success") {
 			await tx.projectRequest.update({
@@ -444,7 +492,7 @@ const createProject = async (payload: ICreateProjectPayload) => {
 		throw new AppError(httpStatus.BAD_REQUEST, "Project request has no client");
 	}
 
-	console.log(payload.projectManagerId);
+	// console.log(payload.projectManagerId);
 	const project = await prisma.project.create({
 		data: {
 			serviceRequestId: projectRequest.id,
@@ -921,6 +969,7 @@ const createProjectReview = async (payload: ICreateProjectReviewPayload) => {
 };
 
 export const ProjectService = {
+	getAllService,
 	projectRequest,
 	getMyProjectRequests,
 	getAllProjectRequests,

@@ -20,7 +20,7 @@ const uploadProfileImage = catchAsync(
 		sendResponse(res, {
 			statusCode: httpStatus.CREATED,
 			success: true,
-			message: "New token generated successfully",
+			message: "Image update successfully",
 			data: result,
 		});
 	}),

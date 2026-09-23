@@ -4,6 +4,17 @@ import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from "http-status";
 import { ProjectService } from "./project.service";
 
+const getAllService = catchAsync(async (req: Request, res: Response) => {
+	const result = await ProjectService.getAllService();
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Services fetched successfully",
+		data: result,
+	});
+});
+
 const projectRequest = catchAsync(
 	catchAsync(async (req: Request, res: Response) => {
 		const payload = req.body;
@@ -71,7 +82,7 @@ const createPaymentInitiate = catchAsync(
 		sendResponse(res, {
 			statusCode: httpStatus.CREATED,
 			success: true,
-			message: "Appointment payment initiated successfully",
+			message: "Payment initiated successfully",
 			data: result,
 		});
 	}),
@@ -86,7 +97,7 @@ const pay = catchAsync(
 		sendResponse(res, {
 			statusCode: httpStatus.CREATED,
 			success: true,
-			message: "Appointment payment initiated successfully",
+			message: "Payment initiated successfully",
 			data: result,
 		});
 	}),
@@ -211,6 +222,7 @@ const createProjectReview = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const ProjectController = {
+	getAllService,
 	projectRequest,
 	getMyProjectRequests,
 	getAllProjectRequests,

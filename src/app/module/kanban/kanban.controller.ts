@@ -46,7 +46,7 @@ const updateTaskStatusByDeveloper = catchAsync(
 	async (req: Request, res: Response) => {
 		const result = await KanbanService.updateTaskStatusByDeveloper({
 			taskId: req.params.taskId as string,
-			developerId: req?.user?.userId as string,
+			userId: req?.user?.userId as string,
 			status: req.body.status,
 		});
 
@@ -63,7 +63,7 @@ const updateTaskStatusByProjectManager = catchAsync(
 	async (req: Request, res: Response) => {
 		const result = await KanbanService.updateTaskStatusByProjectManager({
 			taskId: req.params.taskId as string,
-			projectManagerId: req?.user?.userId as string,
+			userId: req?.user?.userId as string,
 			status: req.body.status,
 		});
 
